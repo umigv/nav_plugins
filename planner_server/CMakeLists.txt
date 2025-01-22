@@ -8,13 +8,23 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(pluginlib REQUIRED)
 
 add_executable(planner_server src/planner_server.cpp)
-ament_target_dependencies(planner_server rclcpp)
+ament_target_dependencies(planner_server rclcpp pluginlib)
+
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
 
 install(TARGETS
   planner_server
   DESTINATION lib/${PROJECT_NAME}
+)
+
+ament_export_include_directories(
+  include
 )
 
 ament_package()
