@@ -9,9 +9,16 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(pluginlib REQUIRED)
+find_package(nav_msgs REQUIRED)
 
-add_executable(planner_server src/planner_server.cpp)
-ament_target_dependencies(planner_server rclcpp pluginlib)
+add_executable(planner_server 
+  src/planner_server.cpp
+  include/planner_server/costmap.hpp)
+ament_target_dependencies(
+  planner_server 
+  rclcpp 
+  pluginlib
+  nav_msgs)
 
 install(
   DIRECTORY include/

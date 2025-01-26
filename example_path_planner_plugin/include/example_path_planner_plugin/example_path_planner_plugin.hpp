@@ -3,6 +3,7 @@
 
 #include "example_path_planner_plugin/visibility_control.h"
 #include "planner_server/path_planner.hpp"
+#include "planner_server/costmap.hpp"
 
 namespace example_path_planner_plugin
 {
@@ -13,7 +14,10 @@ public:
     ExamplePathPlannerPlugin();
     virtual ~ExamplePathPlannerPlugin();
 
-    void test() override;
+    std::vector<planner_server::Coordinate> FindPath(planner_server::Costmap costmap, 
+        std::function<bool(int)> drivable,
+        planner_server::Coordinate start,
+        planner_server::Coordinate goal) override;
 };
 
 }  // namespace example_path_planner_plugin
