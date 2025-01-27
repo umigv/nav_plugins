@@ -30,7 +30,7 @@ target_include_directories(path_planner INTERFACE
 # Link our interface library with infra_common's libraries.
 # This ensures that any symbols needed from infra_common are available.
 target_link_libraries(path_planner INTERFACE
-  ${infra_common_LIBRARIES}
+  infra_common::infra_common  # Use target instead of ${infra_common_LIBRARIES}
 )
 
 # Create the executable for the actual ROS 2 node

@@ -23,6 +23,8 @@ ament_target_dependencies(
   ${PROJECT_NAME} 
   nav_msgs)
 
+ament_export_dependencies(nav_msgs)
+
 ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
 
 install(

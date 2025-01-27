@@ -11,31 +11,39 @@ find_package(ament_cmake_ros REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(planner_server REQUIRED)
 find_package(pluginlib REQUIRED)
+find_package(infra_common REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 pluginlib_export_plugin_description_file(planner_server plugins.xml)
 
-add_library(example_path_planner_plugin src/example_path_planner_plugin.cpp)
-target_compile_features(example_path_planner_plugin PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-target_include_directories(example_path_planner_plugin PUBLIC
+add_library(${PROJECT_NAME} src/example_path_planner_plugin.cpp)
+
+target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
+
 ament_target_dependencies(
-  example_path_planner_plugin
-  "rclcpp"
-  "planner_server"
-  "pluginlib"
+  ${PROJECT_NAME}
+  rclcpp
+  pluginlib
+  infra_common
+  nav_msgs
 )
+
+target_link_libraries(${PROJECT_NAME} planner_server::path_planner)
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
-target_compile_definitions(example_path_planner_plugin PRIVATE "EXAMPLE_PATH_PLANNER_PLUGIN_BUILDING_LIBRARY")
+target_compile_definitions(${PROJECT_NAME} PRIVATE "EXAMPLE_PATH_PLANNER_PLUGIN_BUILDING_LIBRARY")
 
 install(
   DIRECTORY include/
   DESTINATION include
 )
 install(
-  TARGETS example_path_planner_plugin
+  TARGETS ${PROJECT_NAME}
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -46,7 +54,7 @@ ament_export_include_directories(
   include
 )
 ament_export_libraries(
-  example_path_planner_plugin
+  ${PROJECT_NAME}
 )
 ament_export_targets(
   export_${PROJECT_NAME}

@@ -16,7 +16,7 @@ public:
         pluginlib::ClassLoader<PathPlanner> planner_loader("planner_server", "planner_server::PathPlanner");
         try
         {
-            std::shared_ptr<PathPlanner> planner = planner_loader.createSharedInstance("example_path_planner_plugin::ExamplePathPlannerPlugin");
+            std::shared_ptr<PathPlanner> planner = planner_loader.createSharedInstance("ExamplePathPlannerPlugin");
             // Create dummy costmap for now
             auto costmap = std::make_shared<nav_msgs::msg::OccupancyGrid>();
             costmap->data = {0, 0, 0, 0};
