@@ -4,7 +4,7 @@
 #include <vector>
 #include <functional>
 
-#include "costmap.hpp"
+#include "infra_common/costmap.hpp"
 
 namespace planner_server
 {
@@ -23,7 +23,7 @@ public:
     // If no path is found, an empty vector should be returned
     // drivable is given the cost value of a costmap cell and returns whether that
     // cell is drivable
-    virtual std::vector<Coordinate> FindPath(Costmap costmap, 
+    virtual std::vector<Coordinate> FindPath(infra_common::Costmap costmap, 
         std::function<bool(int)> drivable,
         Coordinate start,
         Coordinate goal) = 0;

@@ -1,6 +1,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "pluginlib/class_loader.hpp"
-#include "../include/planner_server/path_planner.hpp" // don't know why planner_server/path_planner.hpp can't be found
+#include "planner_server/path_planner.hpp"
 
 #include "nav_msgs/msg/occupancy_grid.hpp"
 
@@ -24,7 +24,7 @@ public:
             costmap->info.height = 2;
 
             auto drivable = [](int cost) { return cost == 0; };
-            auto path = planner->FindPath(Costmap(costmap), 
+            auto path = planner->FindPath(infra_common::Costmap(costmap), 
                 drivable,
                 {0, 0},
                 {1, 1});
