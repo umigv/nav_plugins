@@ -1,0 +1,11 @@
+# Input
+nav_msgs/OccupancyGrid costmap
+Coordinate2D goal
+---
+
+# Final output
+bool success
+
+---
+# Feedback
+geometry_msgs/Pose current_pose
