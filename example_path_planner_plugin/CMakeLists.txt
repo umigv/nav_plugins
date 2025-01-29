@@ -13,6 +13,7 @@ find_package(planner_server REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(infra_common REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(infra_interfaces REQUIRED)
 
 pluginlib_export_plugin_description_file(planner_server plugins.xml)
 
@@ -30,6 +31,7 @@ ament_target_dependencies(
   pluginlib
   infra_common
   nav_msgs
+  infra_interfaces
 )
 
 target_link_libraries(${PROJECT_NAME} planner_server::path_planner)

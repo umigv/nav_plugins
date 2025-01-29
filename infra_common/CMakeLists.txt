@@ -25,8 +25,6 @@ ament_target_dependencies(
 
 ament_export_dependencies(nav_msgs)
 
-ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
-
 install(
   DIRECTORY include/${PROJECT_NAME}
   DESTINATION include

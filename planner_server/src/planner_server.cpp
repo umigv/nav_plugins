@@ -1,8 +1,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "pluginlib/class_loader.hpp"
-#include "planner_server/path_planner.hpp"
-
 #include "nav_msgs/msg/occupancy_grid.hpp"
+#include "infra_interfaces/action/navigate_to_goal.hpp"
+#include "infra_interfaces/msg/coordinate2_d.hpp"
+#include "planner_server/path_planner.hpp"
 
 namespace planner_server
 {
@@ -24,10 +25,15 @@ public:
             costmap->info.height = 2;
 
             auto drivable = [](int cost) { return cost == 0; };
+            infra_interfaces::msg::Coordinate2D start, goal;
+            start.x = 0;
+            start.y = 0;
+            goal.x = 1;
+            goal.y = 1;
             auto path = planner->FindPath(infra_common::Costmap(costmap), 
                 drivable,
-                {0, 0},
-                {1, 1});
+                start,
+                goal);
             RCLCPP_INFO(this->get_logger(), "Found path with length %ld", path.size());
 
         }

@@ -12,6 +12,8 @@ find_package(rclcpp REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(infra_common REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(infra_interfaces REQUIRED)
 
 # Create the interface library for our abstract path planner.
 # We use INTERFACE because this is a header-only library with no source files.
@@ -48,7 +50,10 @@ ament_target_dependencies(planner_server
   rclcpp 
   pluginlib
   nav_msgs
-  infra_common)
+  infra_common
+  rclcpp_action
+  infra_interfaces
+)
 
 # Install our header files so other packages can use them
 install(
