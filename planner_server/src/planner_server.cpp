@@ -46,28 +46,12 @@ private:
         pluginlib::ClassLoader<PathPlanner> planner_loader("planner_server", "planner_server::PathPlanner");
         try
         {
-            std::shared_ptr<PathPlanner> planner = planner_loader.createSharedInstance("ExamplePathPlannerPlugin");
-            // Create dummy costmap for now
-            auto costmap = std::make_shared<nav_msgs::msg::OccupancyGrid>();
-            costmap->data = {0, 0, 0, 0};
-            costmap->info.width = 2;
-            costmap->info.height = 2;
-
-            auto drivable = [](int cost) { return cost == 0; };
-            infra_interfaces::msg::Coordinate2D start, goal;
-            start.x = 0;
-            start.y = 0;
-            goal.x = 1;
-            goal.y = 1;
-            auto path = planner->FindPath(infra_common::Costmap(costmap), 
-                drivable,
-                start,
-                goal);
-            RCLCPP_INFO(this->get_logger(), "Found path with length %ld", path.size());
+            _planner = planner_loader.createSharedInstance("ExamplePathPlannerPlugin");
+            RCLCPP_INFO(get_logger(), "Loaded planner plugin successfully");
         }
         catch(pluginlib::PluginlibException& ex)
         {
-            RCLCPP_ERROR(this->get_logger(), "The planner plugin failed to load. Error: %s", ex.what());
+            RCLCPP_ERROR(get_logger(), "The planner plugin failed to load. Error: %s", ex.what());
         }
     }
 
@@ -100,6 +84,20 @@ private:
         Coordinate2D start = action_goal->start;
         Coordinate2D goal = action_goal->goal;
         RCLCPP_INFO(get_logger(), "Navigating from (%ld, %ld) to (%ld, %ld)", start.x, start.y, goal.x, goal.y);
+
+        auto drivable = [](int cost) { return cost == 0; }
+        std::vector<Coordinate2D> path = _planner->FindPath(costmap, 
+            drivable,
+            start,
+            goal);
+        RCLCPP_INFO(this->get_logger(), "Found path with length %ld", path.size());
+
+        // TODO: publish current position to feedback topic and detect when robot reaches goal
+        // Basically just need to figure out where to get the robot's current position (get from ZED odometry)
+        // https://www.stereolabs.com/docs/ros2/060_positional-tracking#position-info-subscribing-in-c
+        // Use "odom" topic, which is of type nav_msgs/Odometry
+
+        // CV determines costmap resolution
 
         auto result = std::make_shared<NavigateToGoal::Result>();
         result->success = true;
