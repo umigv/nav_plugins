@@ -1,4 +1,5 @@
 #include <thread>
+#include <chrono>
 
 #include "rclcpp/rclcpp.hpp"
 #include "pluginlib/class_loader.hpp"
@@ -11,7 +12,10 @@
 
 /*
 Call NavigateToGoal action with following command:
-ros2 action send_goal /navigate_to_goal infra_interfaces/action/NavigateToGoal "{costmap: {header: {frame_id: 'map'}, info: {width: 3, height: 3, resolution: 1.0, origin: {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z: 0, w: 1}}}, data: [0, 0, 0, 0, 0, 0, 0, 0, 0]}, start: {x: 0, y: 0}, goal: {x: 1, y: 1}}"
+ros2 action send_goal /navigate_to_goal infra_interfaces/action/NavigateToGoal "{costmap: {header: {frame_id: 'map'}, info: {width: 1, height: 16, resolution: 1.0, origin: {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z: 0, w: 1}}}, data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, start: {x: 0, y: 0}, goal: {x: 0, y: 15}}"
+
+Inspect NavigateToGoal feedback topic with following command: 
+ros2 topic echo /navigate_to_goal/_action/feedback
 */
 
 namespace planner_server
@@ -99,10 +103,34 @@ private:
 
         // CV determines costmap resolution
 
+        // For now, simulate robot movement by publishing feedback every so often
+        auto feedback = std::make_shared<NavigateToGoal::Feedback>();
+        auto sleep_duration = std::chrono::milliseconds(500);
+
+        for (Coordinate2D coord : path)
+        {
+            geometry_msgs::msg::Pose pose;
+            pose.position.x = double(coord.x);
+            pose.position.y = double(coord.y);
+            feedback->distance_from_start = pose;
+            RCLCPP_INFO(get_logger(), "Publishing feedback pose (%f, %f)", pose.position.x, pose.position.y);
+            goal_handle->publish_feedback(feedback);
+            std::this_thread::sleep_for(sleep_duration);
+        }
+
         auto result = std::make_shared<NavigateToGoal::Result>();
-        result->success = true;
-        goal_handle->succeed(result);
-        RCLCPP_INFO(get_logger(), "Navigation succeeded");
+        if (path.back() != goal)
+        {
+            result->success = false;
+            goal_handle->abort(result);
+            RCLCPP_ERROR(get_logger(), "Navigation failed");
+        } 
+        else 
+        {
+            result->success = true;
+            goal_handle->succeed(result);
+            RCLCPP_INFO(get_logger(), "Navigation succeeded");
+        }
     }
 
     std::shared_ptr<PathPlanner> _planner;

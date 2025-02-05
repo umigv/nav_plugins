@@ -9,4 +9,4 @@ bool success
 ---
 
 # Feedback
-geometry_msgs/Pose current_pose
+geometry_msgs/Pose distance_from_start
