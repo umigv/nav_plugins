@@ -12,7 +12,7 @@
 
 /*
 Call NavigateToGoal action with following command:
-ros2 action send_goal /navigate_to_goal infra_interfaces/action/NavigateToGoal "{costmap: {header: {frame_id: 'map'}, info: {width: 1, height: 16, resolution: 1.0, origin: {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z: 0, w: 1}}}, data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, start: {x: 0, y: 0}, goal: {x: 0, y: 15}}"
+ros2 action send_goal /navigate_to_goal infra_interfaces/action/NavigateToGoal "{costmap: {header: {frame_id: 'map'}, info: {width: 4, height: 4, resolution: 1.0, origin: {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z: 0, w: 1}}}, data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, start: {x: 0, y: 0}, goal: {x: 0, y: 3}}"
 
 Inspect NavigateToGoal feedback topic with following command: 
 ros2 topic echo /navigate_to_goal/_action/feedback
@@ -64,6 +64,25 @@ private:
     {
         RCLCPP_INFO(this->get_logger(), "Received goal request");
         (void)uuid;
+
+        // Validate the action goal
+        try
+        {
+            Costmap costmap(goal->costmap);
+            Coordinate2D start = goal->start;
+            Coordinate2D goal_coord = goal->goal;
+            if (!costmap.InBounds(start.x, start.y) || !costmap.InBounds(goal_coord.x, goal_coord.y))
+            {
+                RCLCPP_ERROR(this->get_logger(), "Start or goal coordinate is out of bounds");
+                return rclcpp_action::GoalResponse::REJECT;
+            }
+        }
+        catch(const std::exception& e)
+        {
+            RCLCPP_ERROR(this->get_logger(), "Failed to create costmap from goal: %s", e.what());
+            return rclcpp_action::GoalResponse::REJECT;
+        }
+        
         return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
     }
 
@@ -83,8 +102,7 @@ private:
     void navigate(const std::shared_ptr<GoalHandleNavigateToGoal> goal_handle)
     {
         auto action_goal = goal_handle->get_goal();
-        auto occ_grid = std::make_shared<nav_msgs::msg::OccupancyGrid>(action_goal->costmap);
-        Costmap costmap(occ_grid);
+        Costmap costmap(action_goal->costmap);
         Coordinate2D start = action_goal->start;
         Coordinate2D goal = action_goal->goal;
         RCLCPP_INFO(get_logger(), "Navigating from (%ld, %ld) to (%ld, %ld)", start.x, start.y, goal.x, goal.y);

@@ -9,9 +9,7 @@ namespace infra_common
 class Costmap
 {
 public:
-    Costmap(const nav_msgs::msg::OccupancyGrid::SharedPtr costmap)
-    : _occupancy_grid(costmap)
-    { }
+    Costmap(const nav_msgs::msg::OccupancyGrid occupancy_grid_in);
 
     int GetCost(int x, int y) const;
 
@@ -22,7 +20,7 @@ public:
     int GetHeight() const;
 
 private:
-    nav_msgs::msg::OccupancyGrid::SharedPtr _occupancy_grid;
+    nav_msgs::msg::OccupancyGrid _occupancy_grid;
 };
 
 }
