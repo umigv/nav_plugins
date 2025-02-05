@@ -15,7 +15,8 @@ class PathPlanner
 {
 public:
     // Plugins should implement this function
-    // Returns a vector of coordinates representing a path from start to goal
+    // Returns a vector of coordinates representing a path from start to goal; path 
+    // should include goal but not start
     // If no path is found, an empty vector should be returned
     // drivable is given the cost value of a costmap cell and returns whether that
     // cell is drivable

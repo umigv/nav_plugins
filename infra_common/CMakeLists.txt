@@ -11,6 +11,7 @@ find_package(nav_msgs REQUIRED)
 
 include_directories(include)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON) # Fixed build error after moving example_path_planner_plugin to new directory
 add_library(${PROJECT_NAME} 
   src/costmap.cpp)
 

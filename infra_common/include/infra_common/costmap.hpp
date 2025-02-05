@@ -15,6 +15,8 @@ public:
 
     int GetCost(int x, int y) const;
 
+    bool InBounds(int x, int y) const;
+
     int GetWidth() const;
 
     int GetHeight() const;

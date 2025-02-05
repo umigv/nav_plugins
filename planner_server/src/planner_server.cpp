@@ -11,7 +11,7 @@
 
 /*
 Call NavigateToGoal action with following command:
-ros2 action send_goal /navigate_to_goal infra_interfaces/action/NavigateToGoal "{costmap: {header: {frame_id: 'map'}, info: {width: 2, height: 2, resolution: 1.0, origin: {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z: 0, w: 1}}}, data: [0, 0, 0, 0]}, start: {x: 0, y: 0}, goal: {x: 1, y: 1}}"
+ros2 action send_goal /navigate_to_goal infra_interfaces/action/NavigateToGoal "{costmap: {header: {frame_id: 'map'}, info: {width: 3, height: 3, resolution: 1.0, origin: {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z: 0, w: 1}}}, data: [0, 0, 0, 0, 0, 0, 0, 0, 0]}, start: {x: 0, y: 0}, goal: {x: 1, y: 1}}"
 */
 
 namespace planner_server
@@ -85,7 +85,7 @@ private:
         Coordinate2D goal = action_goal->goal;
         RCLCPP_INFO(get_logger(), "Navigating from (%ld, %ld) to (%ld, %ld)", start.x, start.y, goal.x, goal.y);
 
-        auto drivable = [](int cost) { return cost == 0; }
+        auto drivable = [](int cost) { return cost == 0; };
         std::vector<Coordinate2D> path = _planner->FindPath(costmap, 
             drivable,
             start,
