@@ -7,6 +7,9 @@
   <maintainer email="johnrose@umich.edu">arvuser</maintainer>
   <license>TODO: License declaration</license>
 
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
@@ -15,6 +18,7 @@
   <depend>infra_common</depend>
   <depend>rclcpp_action</depend>
   <depend>infra_interfaces</depend>
+  
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

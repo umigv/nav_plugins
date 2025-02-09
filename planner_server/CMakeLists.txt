@@ -61,6 +61,11 @@ install(
   DESTINATION include
 )
 
+install(
+  DIRECTORY config launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
 # Install both our interface library and executable.
 # The export tag ensures our interface can be found by dependent packages.
 install(TARGETS

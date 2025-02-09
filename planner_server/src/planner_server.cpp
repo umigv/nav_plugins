@@ -10,13 +10,6 @@
 #include "infra_interfaces/msg/coordinate2_d.hpp"
 #include "planner_server/path_planner.hpp"
 
-/*
-Call NavigateToGoal action with following command:
-ros2 action send_goal /navigate_to_goal infra_interfaces/action/NavigateToGoal "{costmap: {header: {frame_id: 'map'}, info: {width: 4, height: 4, resolution: 1.0, origin: {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z: 0, w: 1}}}, data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, start: {x: 0, y: 0}, goal: {x: 0, y: 3}}"
-
-Inspect NavigateToGoal feedback topic with following command: 
-ros2 topic echo /navigate_to_goal/_action/feedback
-*/
 
 namespace planner_server
 {
@@ -33,7 +26,14 @@ public:
     PlannerServer() 
     : Node("planner_server")
     {
-        load_planner_plugin();
+        declare_parameter("planner_plugin", "");
+        declare_parameter("odom_topic", "");
+
+        _odom_topic = get_parameter("odom_topic").as_string();
+        RCLCPP_INFO(get_logger(), "Odom topic is %s", _odom_topic.c_str());
+        std::string planner_plugin = get_parameter("planner_plugin").as_string();
+
+        load_planner_plugin(planner_plugin);
 
         using namespace std::placeholders;
         _navigate_server = rclcpp_action::create_server<NavigateToGoal>(this,
@@ -45,12 +45,12 @@ public:
 
 private:
 
-    void load_planner_plugin()
+    void load_planner_plugin(std::string planner_plugin)
     {
         pluginlib::ClassLoader<PathPlanner> planner_loader("planner_server", "planner_server::PathPlanner");
         try
         {
-            _planner = planner_loader.createSharedInstance("ExamplePathPlannerPlugin");
+            _planner = planner_loader.createSharedInstance(planner_plugin);
             RCLCPP_INFO(get_logger(), "Loaded planner plugin successfully");
         }
         catch(pluginlib::PluginlibException& ex)
@@ -108,11 +108,13 @@ private:
         RCLCPP_INFO(get_logger(), "Navigating from (%ld, %ld) to (%ld, %ld)", start.x, start.y, goal.x, goal.y);
 
         auto drivable = [](int cost) { return cost == 0; };
+        // Need to include start in this path
         std::vector<Coordinate2D> path = _planner->FindPath(costmap, 
             drivable,
             start,
             goal);
         RCLCPP_INFO(this->get_logger(), "Found path with length %ld", path.size());
+        // Call local planner plugin here
 
         // TODO: publish current position to feedback topic and detect when robot reaches goal
         // Basically just need to figure out where to get the robot's current position (get from ZED odometry)
@@ -153,7 +155,7 @@ private:
 
     std::shared_ptr<PathPlanner> _planner;
     rclcpp_action::Server<NavigateToGoal>::SharedPtr _navigate_server;
-
+    std::string _odom_topic;
 };  
 
 } // namespace planner_server
