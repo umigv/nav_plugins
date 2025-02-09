@@ -12,8 +12,9 @@ find_package(rclcpp REQUIRED)
 find_package(planner_server REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(infra_common REQUIRED)
-find_package(nav_msgs REQUIRED)
-find_package(infra_interfaces REQUIRED)
+# infra_interfaces isn't used in this plugin package, but it's necessary
+# to make sure the PathPlanner base class builds correctly
+find_package(infra_interfaces REQUIRED) 
 
 pluginlib_export_plugin_description_file(planner_server plugins.xml)
 
