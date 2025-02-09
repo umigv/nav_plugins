@@ -1,0 +1,33 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/arvuser/arv-ws/install/pizza_bot_interfaces/include/**",
+        "/opt/ros/rolling/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/arvuser/arv-ws/src/nav-onboarding-2024/pizza_bot/include/**",
+        "/home/arvuser/arv-ws/src/nav-onboarding-2024/pizza_bot_infrastructure/include/**",
+        "/home/arvuser/arv-ws/src/nav_stack/cv_grid/include/**",
+        "/home/arvuser/arv-ws/src/nav_stack/global_planner/nav2_arvstar_planner/include/**",
+        "/home/arvuser/arv-ws/src/nav_stack/global_planner/nav2_customnavfn_planner/include/**",
+        "/home/arvuser/arv-ws/src/nav_stack/global_planner/nav2_dstarlite_planner/include/**",
+        "/home/arvuser/arv-ws/src/nav_stack/global_planner/nav2_laneline_costmap_plugin/include/**",
+        "/home/arvuser/arv-ws/src/nav_stack/gps_transform/include/**",
+        "/home/arvuser/arv-ws/src/nav_stack/occupub/include/**",
+        "/home/arvuser/arv-ws/src/pure_pursuit_controller/include/**",
+        "include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
