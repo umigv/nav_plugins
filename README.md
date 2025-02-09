@@ -32,3 +32,8 @@ You can call the action from the terminal with this command, inputting your own 
 ```
 ros2 action send_goal /navigate_to_goal infra_interfaces/action/NavigateToGoal "{costmap: {header: {frame_id: 'map'}, info: {width: 2, height: 2, resolution: 1.0, origin: {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z: 0, w: 1}}}, data: [0, 0, 0, 0]}, start: {x: 0, y: 0}, goal: {x: 0, y: 1}}"
 ```
+
+You can inspect the `navigate_to_goal` feedback topic with this command:
+```
+ros2 topic echo /navigate_to_goal/_action/feedback
+```
