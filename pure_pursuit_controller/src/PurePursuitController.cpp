@@ -1,6 +1,57 @@
 #include "PurePursuitController.hpp"
 #include <cmath>
 
+// Public Functions ------------------------------------------------------------
+
+PurePursuitController::PurePursuitController() {
+    // TODO: parameters to tune
+    spacing = 5;
+
+    // high priority TODO: parameters to fill in
+    maxVelocity = 2;
+    maxAcceleration = 2;
+    trackWidth = 2;
+
+    // general initialization
+    pathFinished = false;
+}
+
+void PurePursuitController::setPath(std::vector<xyCoord> &path) {
+    fillPath(path);
+    lastLookaheadPoint = path[0];
+    lastLookaheadPointIndex = 0;
+}
+
+Twist PurePursuitController::computeNextVelocityCmd(Pose pose, Twist velocity) {
+    
+}
+
+
+// Private Functions -----------------------------------------------------------
+
+void PurePursuitController::fillPath(std::vector<xyCoord> &path_in) {
+    for (size_t i = 0; i < path_in.size() - 1; i++)
+    {
+        xyCoord start = path_in[i], next = path_in[i+1];
+        xyCoord vec{next.x - start.x, next.y - start.y};
+        int magnitude = sqrt(vec.x * vec.x + vec.y * vec.y);
+        int numPts = ceil(magnitude / spacing);
+        vec.x = vec.x / magnitude * spacing;
+        vec.y = vec.y / magnitude * spacing;
+        for (size_t i = 0; i < numPts; ++i)
+        {
+            vec.x = start.x + vec.x * i;
+            vec.y = start.y + vec.y * i;
+            path.push_back(vec);
+        }
+    }
+    path.push_back(path_in[path_in.size() - 1]);
+}
+
+void PurePursuitController::smoothPath() {
+    // not a priority
+}
+
 int PurePursuitController::sgn(double num) {
     if (num < 0)
     {
@@ -11,14 +62,33 @@ int PurePursuitController::sgn(double num) {
     
 }
 
-int PurePursuitController::getTurnError(int targetAngleDegrees, int currentHeadingDegrees) {
-    int turnAngle = targetAngleDegrees - currentHeadingDegrees;
-    if (turnAngle < -180 || turnAngle > 180) {
-        turnAngle = -1 * sgn(turnAngle) * (360 - std::abs(turnAngle));
-    }
-    return turnAngle;
+// int PurePursuitController::getTurnError(int targetAngleDegrees, int currentHeadingDegrees) {
+//     int turnAngle = targetAngleDegrees - currentHeadingDegrees;
+//     if (turnAngle < -180 || turnAngle > 180) {
+//         turnAngle = -1 * sgn(turnAngle) * (360 - std::abs(turnAngle));
+//     }
+//     return turnAngle;
+// }
+
+// int PurePursuitController::getLinearError(xyCoord targetPt, xyCoord currentPt) {
+
+// }
+
+double PurePursuitController::distanceBetweenPoints(xyCoord pt1, xyCoord pt2) {
+    return std::sqrt(std::pow(pt1.x - pt2.x, 2) + std::pow(pt1.y - pt2.y, 2));
 }
 
+double PurePursuitController::getCurvatureAtPoint(xyCoord pt) {
+    
+}
+
+void PurePursuitController::fillTargetVelocities() {
+
+}
+
+double PurePursuitController::rateLimiter() {
+    
+}
 
 xyCoord PurePursuitController::getLineIntersection(xyCoord pt1, xyCoord pt2, double lookAheadDist) {
     // // subtract currentpos from points to offset system to origin
@@ -63,6 +133,22 @@ xyCoord PurePursuitController::getLineIntersection(xyCoord pt1, xyCoord pt2, dou
     return p;
 }
 
-PurePursuitController::PurePursuitController(std::vector<xyCoord> &path) {
+xyCoord PurePursuitController::getClosestPoint(xyCoord startingPt) {
+    
+}
 
+xyCoord PurePursuitController::getLookaheadPoint() {
+    
+}
+
+double PurePursuitController::getArcCurvature() {
+    
+}
+
+double* PurePursuitController::getLinearVelocity() {
+    
+}
+
+double* PurePursuitController::getAngularVelocity() {
+    
 }
