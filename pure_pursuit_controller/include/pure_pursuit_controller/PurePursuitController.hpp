@@ -3,20 +3,40 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <limits>
 
 struct xyCoord {
     int x=0;
     int y=0;
+
+    xyCoord operator-(const xyCoord& other) const {
+        return {x - other.x, y - other.y};
+    }
+    xyCoord operator+(const xyCoord& other) const {
+        return {x + other.x, y + other.y};
+    }
+
+    // allow conversion to int vector
+    operator std::vector<int>() const {
+        return {x, y};
+    }
 };
 
 struct Twist {
-    double linear[3] = {0};
-    double angular[3] = {0};
+    std::vector<double> linear = {0,0,0};
+    std::vector<double> angular = {0,0,0};
 };
 
 struct Pose {
-    double point[3] = {0};
-    double quaternion[4] = {0};
+    std::vector<double> point = {0,0,0};
+    std::vector<double> quaternion = {0,0,0,0};
+};
+
+struct Quaternion {
+    double w = 0;
+    double x = 0;
+    double y = 0;
+    double z = 0;
 };
 
 class PurePursuitController {
@@ -24,37 +44,46 @@ class PurePursuitController {
         PurePursuitController();
         void setPath(std::vector<xyCoord> &path);
         Twist computeNextVelocityCmd(Pose pose, Twist velocity);
+        bool isPathFinished();
         
     private:
         // Parameters:
         int spacing;
-        double lookAheadDist;
-        float maxVelocity;
-        float maxAcceleration;
-        float trackWidth;
+        double maxVelocity;
+        double maxAcceleration;
+        double trackWidth;
+        int lookaheadDist;
+        double kTurnConstant;
 
         std::vector<xyCoord> path;
         std::vector<double> targetVelocities;
         xyCoord lastLookaheadPoint;
-        int lastLookaheadPointIndex;
+        double lastLookaheadPointIndex;
         bool pathFinished;
 
+        // priority
         void fillPath(std::vector<xyCoord> &path_in);
-        void smoothPath(); // not priority
+        void fillTargetVelocities();
+        xyCoord getLookaheadPoint(xyCoord currentPt);
+        std::vector<double> getLinearVelocity(xyCoord currentPt);
+        std::vector<double> getAngularVelocity(xyCoord currentPt, double currentAngleRad, xyCoord lookaheadPt, std::vector<double> linearVelocity);
 
+        // possible helper functions (or possibly not needed if I was doing too much earlier)
+        void smoothPath(); // not priority
         int sgn(double num);
+        int dot(std::vector<int> vec1, std::vector<int> vec2);
+        double getAngleFromQuaternion(std::vector<double> q);
+        int getSidePointIsOn(xyCoord currentPt, double currentAngleRad, xyCoord targetPt);
         // int getTurnError(int targetAngleDegrees, int currentHeadingDegrees);
         // int getLinearError(xyCoord targetPt, xyCoord currentPt);
         double distanceBetweenPoints(xyCoord pt1, xyCoord pt2);
-        double getCurvatureAtPoint(xyCoord pt);
-        void fillTargetVelocities();
-        double rateLimiter();
+        double distanceBetweenPoints(int idx1, int idx2);
+        double getCurvatureAtPoint(xyCoord pt1, xyCoord pt2, xyCoord pt3);
+        double getCurvatureAtPoint(int idx);
 
-        xyCoord getLineIntersection(xyCoord pt1, xyCoord pt2, double lookAheadDist);
+        double rateLimiter();
+        xyCoord getLineIntersection(xyCoord pt1, xyCoord pt2);
         // Twist calculateTwistToPoint(xyCoord currentPt, int currentHeadingDegrees, xyCoord targetPt);
-        xyCoord getClosestPoint(xyCoord startingPt);
-        xyCoord getLookaheadPoint();
-        double getArcCurvature();
-        double* getLinearVelocity();
-        double* getAngularVelocity();
+        int getClosestPointIndex(xyCoord startingPt);
+        double getArcCurvature(xyCoord currentPt, double currentAngleRad, xyCoord lookaheadPt);
 };
