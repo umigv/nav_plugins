@@ -75,7 +75,7 @@ PurePursuit::Trajectory::Trajectory(const DiscretePath& path, const Gains& gains
     // Deceleration
     for(int i = velocity.size()-2; i >= 0; i--){
         const double dist = path[i].distTo(path[i+1]);
-        const double limit = sqrt(velocity[i+1] * velocity[i+1] - 2 * gains.MaxAcceleration() * dist);
+        const double limit = sqrt(velocity[i+1] * velocity[i+1] + 2 * gains.MaxAcceleration() * dist);
         velocity[i] = min(velocity[i], limit);
     }
 
