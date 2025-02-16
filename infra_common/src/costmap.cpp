@@ -34,3 +34,12 @@ int Costmap::GetHeight() const
 {
     return _occupancy_grid.info.height;
 }
+
+float Costmap::GetResolution() const
+{
+    return _occupancy_grid.info.resolution;
+}
+
+std::pair<float, float> Costmap::GetOrigin() const{
+    return {_occupancy_grid.info.origin.position.x, _occupancy_grid.info.origin.position.x};
+}
