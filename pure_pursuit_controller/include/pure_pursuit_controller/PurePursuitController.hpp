@@ -1,9 +1,10 @@
 #pragma once
 
+#include <cmath>
+#include <limits>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
-#include <limits>
 
 struct xyCoord {
     int x=0;
@@ -55,35 +56,31 @@ class PurePursuitController {
         int lookaheadDist;
         double kTurnConstant;
 
+        // member variables
         std::vector<xyCoord> path;
         std::vector<double> targetVelocities;
         xyCoord lastLookaheadPoint;
         double lastLookaheadPointIndex;
         bool pathFinished;
 
-        // priority
+        // core functions
         void fillPath(std::vector<xyCoord> &path_in);
         void fillTargetVelocities();
         xyCoord getLookaheadPoint(xyCoord currentPt);
         std::vector<double> getLinearVelocity(xyCoord currentPt);
         std::vector<double> getAngularVelocity(xyCoord currentPt, double currentAngleRad, xyCoord lookaheadPt, std::vector<double> linearVelocity);
 
-        // possible helper functions (or possibly not needed if I was doing too much earlier)
+        // helper functions
+        int getClosestPointIndex(xyCoord startingPt);
+        double getArcCurvature(xyCoord currentPt, double currentAngleRad, xyCoord lookaheadPt);
+        double getCurvatureAtPoint(xyCoord pt1, xyCoord pt2, xyCoord pt3);
+        double getCurvatureAtPoint(int idx);
+        int getSidePointIsOn(xyCoord currentPt, double currentAngleRad, xyCoord targetPt);
         void smoothPath(); // not priority
+
+        // math functions
         int sgn(double num);
         int dot(std::vector<int> vec1, std::vector<int> vec2);
         double getAngleFromQuaternion(std::vector<double> q);
-        int getSidePointIsOn(xyCoord currentPt, double currentAngleRad, xyCoord targetPt);
-        // int getTurnError(int targetAngleDegrees, int currentHeadingDegrees);
-        // int getLinearError(xyCoord targetPt, xyCoord currentPt);
-        double distanceBetweenPoints(xyCoord pt1, xyCoord pt2);
         double distanceBetweenPoints(int idx1, int idx2);
-        double getCurvatureAtPoint(xyCoord pt1, xyCoord pt2, xyCoord pt3);
-        double getCurvatureAtPoint(int idx);
-
-        double rateLimiter();
-        xyCoord getLineIntersection(xyCoord pt1, xyCoord pt2);
-        // Twist calculateTwistToPoint(xyCoord currentPt, int currentHeadingDegrees, xyCoord targetPt);
-        int getClosestPointIndex(xyCoord startingPt);
-        double getArcCurvature(xyCoord currentPt, double currentAngleRad, xyCoord lookaheadPt);
 };
