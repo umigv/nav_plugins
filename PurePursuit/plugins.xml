@@ -1,0 +1,5 @@
+<library path="PurePursuit">
+  <class type="PurePursuitController" base_class_type="plugin_base_classes::Controller">
+    <description>Pure Pursuit Local Planner</description>
+  </class>
+</library>
