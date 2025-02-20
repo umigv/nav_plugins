@@ -20,6 +20,8 @@ static geometry_msgs::msg::Twist toTwist(const Twist& twist){
     return result;
 }
 
+namespace controller_plugins{
+
 PurePursuitController::PurePursuitController() : controller(PurePursuit::Gains(1, 1, 1, 1)){
     // TODO: Load gains from parameter server
 }
@@ -33,3 +35,5 @@ geometry_msgs::msg::Twist PurePursuitController::compute_next_command_velocity(
     const Twist result = controller.step(toPose(current_pose));
     return toTwist(result);
 }
+
+} // namespace controller_plugins

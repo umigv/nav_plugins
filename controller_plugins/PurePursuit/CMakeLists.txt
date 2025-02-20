@@ -16,13 +16,7 @@ find_package(infra_common REQUIRED)
 pluginlib_export_plugin_description_file(plugin_base_classes plugins.xml)
 
 add_library(${PROJECT_NAME} 
-  src/DiscretePath.cpp
-  src/Math.cpp
-  src/Point.cpp
-  src/Pose.cpp
-  src/PurePursuit.cpp
   src/PurePursuitController.cpp
-  src/Rotation.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
