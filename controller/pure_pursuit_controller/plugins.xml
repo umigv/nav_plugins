@@ -1,0 +1,5 @@
+<library path="pure_pursuit_controller">
+  <class type="controller_plugins::PurePursuitController" base_class_type="plugin_base_classes::Controller">
+    <description>Pure Pursuit Controller</description>
+  </class>
+</library>
