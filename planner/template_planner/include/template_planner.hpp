@@ -5,7 +5,7 @@
 namespace planner_plugins
 {
 
-class ExamplePlanner : public plugin_base_classes::PathPlanner
+class TemplatePlanner : public plugin_base_classes::PathPlanner
 {
 public:
     std::vector<infra_common::CellCoordinate> find_path(const infra_common::Costmap &costmap, 
@@ -18,4 +18,4 @@ public:
 
 #include <pluginlib/class_list_macros.hpp>
 
-PLUGINLIB_EXPORT_CLASS(planner_plugins::ExamplePlanner, plugin_base_classes::PathPlanner)
+PLUGINLIB_EXPORT_CLASS(planner_plugins::TemplatePlanner, plugin_base_classes::PathPlanner)
