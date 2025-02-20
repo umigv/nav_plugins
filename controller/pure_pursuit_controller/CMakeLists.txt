@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(pure_pursuit)
+project(pure_pursuit_controller)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-std=c++20 -Wall -Wextra -Wpedantic)
@@ -16,13 +16,7 @@ find_package(infra_common REQUIRED)
 pluginlib_export_plugin_description_file(plugin_base_classes plugins.xml)
 
 add_library(${PROJECT_NAME} 
-  src/DiscretePath.cpp
-  src/Math.cpp
-  src/Point.cpp
-  src/Pose.cpp
-  src/PurePursuit.cpp
-  src/PurePursuitController.cpp
-  src/Rotation.cpp
+  src/pure_pursuit_controller.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
@@ -38,17 +32,13 @@ ament_target_dependencies(
   "infra_common"
 )
 
-# Causes the visibility macros to use dllexport rather than dllimport,
-# which is appropriate when building the dll but not consuming it.
-target_compile_definitions(pure_pursuit PRIVATE "PURE_PURSUIT_BUILDING_LIBRARY")
-
 install(
   DIRECTORY include/
   DESTINATION include
 )
 
 install(
-  TARGETS pure_pursuit
+  TARGETS pure_pursuit_controller
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -71,7 +61,7 @@ ament_export_include_directories(
   include
 )
 ament_export_libraries(
-    pure_pursuit
+  pure_pursuit_controller
 )
 ament_export_targets(
   export_${PROJECT_NAME}

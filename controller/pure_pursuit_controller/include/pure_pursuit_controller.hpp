@@ -2,6 +2,8 @@
 #include "plugin_base_classes/controller.hpp"
 #include "PurePursuit.hpp"
 
+namespace controller_plugins{
+
 class PurePursuitController final : public plugin_base_classes::Controller{
 public:
     PurePursuitController();
@@ -15,3 +17,8 @@ public:
 protected:
     PurePursuit controller;
 };
+
+} // namespace controller_plugins
+
+#include <pluginlib/class_list_macros.hpp>
+PLUGINLIB_EXPORT_CLASS(controller_plugins::PurePursuitController, plugin_base_classes::Controller)
