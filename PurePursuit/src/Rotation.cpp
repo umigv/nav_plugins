@@ -6,10 +6,11 @@ Rotation::Rotation(double theta) : theta(constrainAngle180(theta)), cosine(std::
 
 Rotation::Rotation(double iX, double iY) {
     const auto magnitude = hypot(iX, iY);
-    if (magnitude > 1e-6) {
+    if(magnitude > 1e-6){
         sine = (iY / magnitude);
         cosine = (iX / magnitude);
-    } else {
+    } 
+    else{
         sine = 0.0;
         cosine = 1.0;
     }
@@ -50,14 +51,6 @@ Rotation Rotation::operator*(double scalar) const {
 
 Rotation Rotation::operator/(double scalar) const {
     return *this * (1.0 / scalar);
-}
-
-bool Rotation::operator==(const Rotation& rhs) const {
-    return std::hypot(cosine - rhs.cosine, sine - rhs.sine) < 1E-9;
-}
-
-bool Rotation::operator!=(const Rotation& rhs) const {
-    return !(*this == rhs);
 }
 
 Rotation Rotation::rotateBy(const Rotation& rhs) const {

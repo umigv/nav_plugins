@@ -26,10 +26,6 @@ class Point {
 
     Point operator/(double scalar) const;
 
-    bool operator==(const Point& rhs) const;
-
-    bool operator!=(const Point& rhs) const;
-
     double theta() const;
 
     double mag() const;
@@ -39,10 +35,6 @@ class Point {
     double angleTo(const Point& rhs) const;
 
     double dot(const Point& rhs) const;
-
-    double wedge(const Point& rhs) const;
-
-    Point project(const Point& rhs) const;
 
     Point rotateBy(const Rotation& rhs) const;
 

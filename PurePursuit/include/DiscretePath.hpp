@@ -1,6 +1,5 @@
 #pragma once
 #include "Point.hpp"
-#include <algorithm>
 #include <vector>
 
 class DiscretePath {
@@ -13,12 +12,6 @@ class DiscretePath {
     DiscretePath() = default;
     DiscretePath(const std::initializer_list<Point>& waypoint);
     DiscretePath(const std::vector<Point>& waypoint);
-    ~DiscretePath() = default;
-
-    DiscretePath operator+(const DiscretePath& rhs) const;
-    DiscretePath operator+(const Point& rhs) const;
-    DiscretePath& operator+=(const DiscretePath& rhs);
-    DiscretePath& operator+=(const Point& rhs);
 
     iterator begin();
     const_iterator begin() const;

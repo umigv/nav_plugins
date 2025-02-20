@@ -21,16 +21,15 @@ static geometry_msgs::msg::Twist toTwist(const Twist& twist){
 }
 
 PurePursuitController::PurePursuitController() : controller(PurePursuit::Gains(1, 1, 1, 1)){
-
+    // TODO: Load gains from parameter server
 }
 
-void PurePursuitController::set_path(const std::vector<infra_common::CellCoordinate> &path){
+void PurePursuitController::set_path(const std::vector<infra_common::CellCoordinate>& path){
     controller.setPath(toDiscretePath(path)); 
 }
 
 geometry_msgs::msg::Twist PurePursuitController::compute_next_command_velocity(
-    const geometry_msgs::msg::Pose &current_pose, const geometry_msgs::msg::Twist &current_velocity){
-    (void)(current_velocity); // Unused
+    const geometry_msgs::msg::Pose &current_pose, [[maybe_unused]] const geometry_msgs::msg::Twist& current_velocity){
     const Twist result = controller.step(toPose(current_pose));
     return toTwist(result);
 }

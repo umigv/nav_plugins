@@ -1,5 +1,6 @@
 #include "DiscretePath.hpp"
 #include <cmath>
+#include <algorithm>
 
 DiscretePath::DiscretePath(const std::initializer_list<Point>& waypoint) : path(waypoint) {}
 
