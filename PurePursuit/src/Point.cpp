@@ -34,14 +34,6 @@ Point Point::operator/(double scalar) const {
     return *this * (1.0 / scalar);
 }
 
-bool Point::operator==(const Point& rhs) const {
-    return std::abs(x - rhs.x) < 1E-9 && std::abs(y - rhs.y) < 1E-9;
-}
-
-bool Point::operator!=(const Point& rhs) const {
-    return !(*this == rhs);
-}
-
 double Point::theta() const {
     return std::atan2(y, x);
 }
@@ -51,7 +43,7 @@ double Point::mag() const {
 }
 
 double Point::distTo(const Point& rhs) const {
-    return std::hypot(rhs.x - x, rhs.y - y);
+    return Point(rhs.x - x, rhs.y - y).mag();
 }
 
 double Point::angleTo(const Point& rhs) const {
@@ -60,14 +52,6 @@ double Point::angleTo(const Point& rhs) const {
 
 double Point::dot(const Point& rhs) const {
     return x * rhs.x + y * rhs.y;
-}
-
-double Point::wedge(const Point& rhs) const {
-    return x * rhs.y - y * rhs.x;
-}
-
-Point Point::project(const Point& rhs) const {
-    return rhs * (this->dot(rhs) / rhs.dot(rhs));
 }
 
 Point Point::rotateBy(const Rotation& rhs) const {
@@ -95,8 +79,7 @@ double circumradius(const Point& left, const Point& mid, const Point& right) {
     return radius;
 }
 
-std::optional<double> circleLineIntersection(const Point& start, const Point& end, const Point& point,
-                                             double radius) {
+std::optional<double> circleLineIntersection(const Point& start, const Point& end, const Point& point, double radius){
     const Point d = end - start;
     const Point f = start - point;
 

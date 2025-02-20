@@ -19,10 +19,6 @@ class Pose {
 
     double Theta() const;
 
-    bool operator==(const Pose& rhs) const;
-
-    bool operator!=(const Pose& rhs) const;
-
     private:
     Point point;
     Rotation rotation;

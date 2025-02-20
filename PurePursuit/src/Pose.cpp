@@ -25,14 +25,6 @@ double Pose::Theta() const {
     return rotation.Theta();
 }
 
-bool Pose::operator==(const Pose& rhs) const {
-    return point == rhs.point && rotation == rhs.rotation;
-}
-
-bool Pose::operator!=(const Pose& rhs) const {
-    return !(*this==rhs);
-}
-
 double curvatureToPoint(const Pose& position, const Point& point) {
     const double a = -std::tan(position.Theta());
     const double b = 1;
