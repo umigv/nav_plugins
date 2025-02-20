@@ -1,25 +1,32 @@
 CXX := g++
-CXXFLAGS := -std=c++20 -O3 -Wall -Wextra -MMD -MP -Iinclude
+CXXFLAGS := -std=c++20 -O3 -Wall -Wextra -MMD -MP -I../include -Iinclude
 
-SRC_DIR := src
-INC_DIR := include
+SRC_DIRS := ../src ./src
 BUILD_DIR := build
-SOURCES := $(wildcard $(SRC_DIR)/*.cpp) main.cpp
-OBJECTS := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
-DEPFILES := $(patsubst %.o, %.d, $(OBJECTS))
-TARGET := purepursuit
+TARGET := pure_pursuit
+
+SOURCES := $(filter-out ../src/pure_pursuit_controller.cpp, $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp)) main.cpp)
+OBJECTS := $(patsubst %,%,$(addprefix $(BUILD_DIR)/,$(notdir $(SOURCES:.cpp=.o))))
+DEPFILES := $(OBJECTS:.o=.d)
 
 $(TARGET): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS)
 
 -include $(DEPFILES)
 
+$(BUILD_DIR)/%.o: ../src/%.cpp
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/%.o: ./src/%.cpp
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 $(BUILD_DIR)/%.o: %.cpp
-	mkdir -p $(@D)
+	mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
 	rm -rf $(BUILD_DIR) $(TARGET)
 
 .PHONY: clean
-
