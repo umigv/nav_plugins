@@ -1,0 +1,5 @@
+<library path="template_planner">
+  <class type="planner_plugins::TemplatePlanner" base_class_type="plugin_base_classes::PathPlanner">
+    <description>TODO: Planner description</description>
+  </class>
+</library>

@@ -1,8 +1,0 @@
-<library path="planner_plugins">
-  <class type="planner_plugins::ExamplePlanner" base_class_type="plugin_base_classes::PathPlanner">
-    <description>Example planner.</description>
-  </class>
-  <class type="planner_plugins::BfsPlanner" base_class_type="plugin_base_classes::PathPlanner">
-    <description>BFS planner.</description>
-  </class>
-</library>

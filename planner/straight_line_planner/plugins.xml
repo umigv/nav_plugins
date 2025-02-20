@@ -1,0 +1,5 @@
+<library path="straight_line_planner">
+  <class type="planner_plugins::StraightLinePlanner" base_class_type="plugin_base_classes::PathPlanner">
+    <description>Straight Line Planner</description>
+  </class>
+</library>
