@@ -6,12 +6,12 @@ This repository contains the plugins used by `nav_infrastructure`.
 The `planner_server` node within `nav_infrastructure` dynamically loads a planner plugin at runtime, making it easy to swap between different path planning algorithms. Here's how to create a path planner plugin:
 - Run the creation script
     ```bash
-    chmod u+x create_planner.sh
-    ./create_planner <base_name>
+    chmod u+x create_plugin.sh
+    ./create_plugin planner <base_name>
     ```
     The base name should be in lower_snake_case and include only the planner name. For example, if you want to create my_test_planner, run:
     ```
-    ./create_planner my_test
+    ./create_plugin planner my_test
     ```
 - Go into `<name>_planner.cpp`, Using `straight_line_planner.cpp` or `bfs_planner.cpp` as reference, implement the `find_path()` function
 - When your plugin is finished, you'll need to test it using the `planner_server` within the `nav_infrastructure` repository
