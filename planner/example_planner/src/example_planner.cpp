@@ -1,4 +1,4 @@
-#include "planner_plugins/example_planner.hpp"
+#include "example_planner.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 #include <vector>

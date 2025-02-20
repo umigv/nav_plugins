@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(planner_plugins)
+project(example_planner)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -17,7 +17,6 @@ pluginlib_export_plugin_description_file(plugin_base_classes plugins.xml)
 
 add_library(${PROJECT_NAME} 
   src/example_planner.cpp
-  src/bfs_planner.cpp
 )
 target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -33,14 +32,14 @@ ament_target_dependencies(
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
-target_compile_definitions(planner_plugins PRIVATE "PLANNER_PLUGINS_BUILDING_LIBRARY")
+target_compile_definitions(example_planner PRIVATE "EXAMPLE_PLANNER_BUILDING_LIBRARY")
 
 install(
   DIRECTORY include/
   DESTINATION include
 )
 install(
-  TARGETS planner_plugins
+  TARGETS example_planner
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -63,7 +62,7 @@ ament_export_include_directories(
   include
 )
 ament_export_libraries(
-  planner_plugins
+  example_planner
 )
 ament_export_targets(
   export_${PROJECT_NAME}

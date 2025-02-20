@@ -1,4 +1,4 @@
-#include "planner_plugins/bfs_planner.hpp"
+#include "bfs_planner.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 #include <vector>

@@ -1,7 +1,5 @@
-#ifndef PLANNER_PLUGINS__BFS_PLANNER_HPP_
-#define PLANNER_PLUGINS__BFS_PLANNER_HPP_
+#pragma once
 
-#include "planner_plugins/visibility_control.h"
 #include "plugin_base_classes/path_planner.hpp"
 
 namespace planner_plugins
@@ -21,5 +19,3 @@ public:
 #include <pluginlib/class_list_macros.hpp>
 
 PLUGINLIB_EXPORT_CLASS(planner_plugins::BfsPlanner, plugin_base_classes::PathPlanner)
-
-#endif
