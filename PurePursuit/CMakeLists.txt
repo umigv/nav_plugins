@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(pure_pursuit)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options(-std=c++20 -Wall -Wextra -Wpedantic)
 endif()
 
 # find dependencies
@@ -23,7 +23,6 @@ add_library(${PROJECT_NAME}
   src/PurePursuit.cpp
   src/PurePursuitController.cpp
   src/Rotation.cpp
-  src/Twist.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17

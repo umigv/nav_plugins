@@ -26,10 +26,6 @@ class Rotation {
 
     Rotation operator/(double scalar) const;
 
-    bool operator==(const Rotation& rhs) const;
-
-    bool operator!=(const Rotation& rhs) const;
-
     Rotation rotateBy(const Rotation& rhs) const;
 
     private:

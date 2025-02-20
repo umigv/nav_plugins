@@ -9,7 +9,8 @@ public:
     void set_path(const std::vector<infra_common::CellCoordinate> &path) override;
 
     geometry_msgs::msg::Twist compute_next_command_velocity(
-        const geometry_msgs::msg::Pose &current_pose, const geometry_msgs::msg::Twist &current_velocity) override;
+        const geometry_msgs::msg::Pose &current_pose, 
+        [[maybe_unused]] const geometry_msgs::msg::Twist &current_velocity) override;
 
 protected:
     PurePursuit controller;
