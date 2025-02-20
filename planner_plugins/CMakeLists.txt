@@ -17,6 +17,7 @@ pluginlib_export_plugin_description_file(plugin_base_classes plugins.xml)
 
 add_library(${PROJECT_NAME} 
   src/example_planner.cpp
+  src/bfs_planner.cpp
 )
 target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_include_directories(${PROJECT_NAME} PUBLIC
