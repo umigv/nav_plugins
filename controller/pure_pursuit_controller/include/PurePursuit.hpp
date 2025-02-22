@@ -46,7 +46,7 @@ class PurePursuit {
 
     Gains gains;
     DiscretePath path;
-    Trajectory trajectory;
+    mutable Trajectory trajectory;
     mutable double minSearchIndex;
     mutable DiscretePath::const_iterator closestPointIter;
     mutable Point lookAheadPoint;

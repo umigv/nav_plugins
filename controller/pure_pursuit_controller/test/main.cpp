@@ -13,7 +13,7 @@ int main(){
 
     controller.setPath(bezier.toDiscretePath(100));
 
-    DifferentialDrive drive(Pose(0, 0, 0), 1);
+    DifferentialDrive drive(Pose(0, 0, 0));
 
     while(!controller.isFinished()){
         const Twist twist = controller.step(drive.getState());
@@ -21,4 +21,3 @@ int main(){
         std::cout << drive.getState().X() << " " << drive.getState().Y() << std::endl;
     }
 }
-

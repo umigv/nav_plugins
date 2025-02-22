@@ -5,8 +5,8 @@
 
 class DifferentialDrive {
 public:
-    DifferentialDrive(const Pose& startPose, double trackWidth)
-        : pose(startPose), trackWidth(trackWidth){}
+    DifferentialDrive(const Pose& startPose)
+        : pose(startPose){}
 
     const Pose& getState() const {
         return pose;
@@ -24,5 +24,4 @@ public:
 
 private:
     Pose pose;
-    double trackWidth;
 };
