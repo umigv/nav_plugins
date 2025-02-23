@@ -36,4 +36,8 @@ geometry_msgs::msg::Twist PurePursuitController::compute_next_command_velocity(
     return toTwist(result);
 }
 
+bool PurePursuitController::is_finished() const{
+    return controller.isFinished();
+}
+
 } // namespace controller_plugins
