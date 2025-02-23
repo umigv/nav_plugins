@@ -14,6 +14,8 @@ public:
         const geometry_msgs::msg::Pose &current_pose, 
         [[maybe_unused]] const geometry_msgs::msg::Twist &current_velocity) override;
 
+    bool is_finished() const override;
+    
 protected:
     PurePursuit controller;
 };
