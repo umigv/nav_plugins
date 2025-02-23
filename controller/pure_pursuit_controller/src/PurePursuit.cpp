@@ -82,10 +82,10 @@ PurePursuit::Trajectory::Trajectory(const DiscretePath& path, const Gains& gains
     velocity.front() = velocity[1];
 }
 
-PurePursuit::Gains::Gains(double maxVelocity, double maxAcceleration, double maxAngularVelocity, double lookAheadDistance)
+PurePursuit::Gains::Gains(double maxVelocity, double maxAcceleration, double trackWidth, double lookAheadDistance)
     : maxVelocity(maxVelocity), 
       maxAcceleration(maxAcceleration), 
-      maxAngularVelocity(maxAngularVelocity), 
+      maxAngularVelocity(2 * maxVelocity / trackWidth), 
       lookAheadDistance(lookAheadDistance){}
 
 double PurePursuit::Gains::MaxVelocity() const{

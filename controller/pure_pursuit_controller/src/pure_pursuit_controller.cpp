@@ -22,7 +22,7 @@ static geometry_msgs::msg::Twist toTwist(const Twist& twist){
 
 namespace controller_plugins{
 
-PurePursuitController::PurePursuitController() : controller(PurePursuit::Gains(1, 1, 1, 1)){
+PurePursuitController::PurePursuitController() : controller(PurePursuit::Gains(1, 1, 0.8, 0.152)){
     // TODO: Load gains from parameter server
 }
 
