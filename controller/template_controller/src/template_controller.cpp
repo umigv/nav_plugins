@@ -14,4 +14,8 @@ geometry_msgs::msg::Twist TemplateController::compute_next_command_velocity(
     return command_velocity;
 }
 
+bool TemplateController::is_finished() const{
+    return true;
+}
+
 } // namespace controller_plugins
