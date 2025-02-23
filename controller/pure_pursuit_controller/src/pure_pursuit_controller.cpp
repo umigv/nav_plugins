@@ -1,68 +1,74 @@
-#include "PurePursuitController.hpp"
+#include "pure_pursuit_controller.hpp"
 
+namespace controller_plugins{
 
-// Public Functions ------------------------------------------------------------
+void PurePursuitController::set_path(const std::vector<infra_common::CellCoordinate>& path){
+    RCLCPP_INFO(rclcpp::get_logger("PurePursuitController"), "PurePursuitController setting path");
 
-PurePursuitController::PurePursuitController() {
     // TODO: parameters to tune
     spacing = 5;
     lookaheadDist = 10;
     kTurnConstant = 1;
 
     // high priority TODO: parameters to fill in
-    maxVelocity = 2;
-    maxAcceleration = 2;
+    maxVelocity = 1;
+    maxAcceleration = 1;
     trackWidth = 2;
 
     // general initialization
     pathFinished = false;
-}
-
-
-void PurePursuitController::setPath(std::vector<xyCoord> &path) {
-    fillPath(path);
     lastLookaheadPoint = path[0];
     lastLookaheadPointIndex = 0;
+
+    // fill path variable
+    fillPath(path);
+
     // also calculate target velocities at each point
     fillTargetVelocities();
 }
 
+geometry_msgs::msg::Twist PurePursuitController::compute_next_command_velocity(
+    const geometry_msgs::msg::Pose &current_pose, const geometry_msgs::msg::Twist& current_velocity){
+    RCLCPP_INFO(rclcpp::get_logger("PurePursuitController"), "PurePursuitController computing next velocity");
+    (void)(current_velocity); // current velocity not used
 
-Twist PurePursuitController::computeNextVelocityCmd(Pose pose, Twist velocity) {
-    xyCoord currentPt = {pose.point[0], pose.point[1]};
-    double currentDir = getAngleFromQuaternion(pose.quaternion);
+    // get info from parameters
+    infra_common::CellCoordinate currentPt = {int(current_pose.position.x), int(current_pose.position.y)};
+    double currentDir = getAngleFromQuaternion(current_pose.orientation);
+
     // check if this is the last step of the path
     if (getClosestPointIndex(currentPt) == path.size() - 1) {
         pathFinished = true;
     }
+
     // get lookahead point as a target to get to
-    xyCoord lookAheadPoint = getLookaheadPoint(currentPt);
+    infra_common::CellCoordinate lookAheadPoint = getLookaheadPoint(currentPt);
+
     // calculate velocities to get to lookahead point
-    Twist next_velocity;
+    geometry_msgs::msg::Twist next_velocity;
     next_velocity.linear = getLinearVelocity(currentPt);
     next_velocity.angular = getAngularVelocity(currentPt, currentDir, lookAheadPoint, next_velocity.linear);
+
     // return Twist with velocities
     return next_velocity;
 }
 
-
-bool PurePursuitController::isPathFinished() {
+bool PurePursuitController::is_finished() const{
     return pathFinished;
 }
 
-
 // Core Functions --------------------------------------------------------------
 
-void PurePursuitController::fillPath(std::vector<xyCoord> &path_in) {
+void PurePursuitController::fillPath(const std::vector<infra_common::CellCoordinate> &path_in) {
     for (size_t i = 0; i < path_in.size() - 1; i++)
     {
-        xyCoord start = path_in[i], next = path_in[i+1];
-        xyCoord vec{next.x - start.x, next.y - start.y};
+        infra_common::CellCoordinate start = path_in[i], next = path_in[i+1];
+        infra_common::CellCoordinate vec{next.x - start.x, next.y - start.y};
         int magnitude = sqrt(vec.x * vec.x + vec.y * vec.y);
         int numPts = ceil(magnitude / spacing);
         vec.x = vec.x / magnitude * spacing;
         vec.y = vec.y / magnitude * spacing;
-        for (size_t i = 0; i < numPts; ++i)
+        for (int i = 0; i < numPts; ++i)
         {
             vec.x = start.x + vec.x * i;
             vec.y = start.y + vec.y * i;
@@ -72,10 +78,9 @@ void PurePursuitController::fillPath(std::vector<xyCoord> &path_in) {
     path.push_back(path_in[path_in.size() - 1]);
 }
 
-
 void PurePursuitController::fillTargetVelocities() {
     targetVelocities.resize(path.size());
-    for (int i = 0; i < path.size(); ++i)
+    for (size_t i = 0; i < path.size(); ++i)
     {
         targetVelocities.at(i) = std::min(maxVelocity, kTurnConstant/getCurvatureAtPoint(i));
     } //fill original velocities based on curvature at point in path - step 1
@@ -92,20 +97,19 @@ void PurePursuitController::fillTargetVelocities() {
     
 }
 
-
-xyCoord PurePursuitController::getLookaheadPoint(xyCoord currentPt) {
+infra_common::CellCoordinate PurePursuitController::getLookaheadPoint(infra_common::CellCoordinate currentPt) {
     // find index of closest point, to start search at
     int closestPointIndex = getClosestPointIndex(currentPt);
 
     // loop through the next line segments looking for an intersection
-    for (int i = closestPointIndex; i < path.size() - 1; i++) {
+    for (size_t i = closestPointIndex; i < path.size() - 1; i++) {
         // get line segment
-        xyCoord segmentStartPt = path[i];
-        xyCoord segmentEndPt = path[i+1];
+        infra_common::CellCoordinate segmentStartPt = path[i];
+        infra_common::CellCoordinate segmentEndPt = path[i+1];
 
         // calculate necessary vectors
-        std::vector<int> segmentDir = segmentEndPt - segmentStartPt;
-        std::vector<int> toStart = segmentStartPt - currentPt;
+        std::vector<int> segmentDir = {segmentEndPt.x - segmentStartPt.x, segmentEndPt.y - segmentStartPt.y};
+        std::vector<int> toStart = {segmentStartPt.x - currentPt.x, segmentStartPt.y - currentPt.y};
 
         // calculate discriminant
         int a = dot(segmentDir, segmentDir);
@@ -134,7 +138,8 @@ xyCoord PurePursuitController::getLookaheadPoint(xyCoord currentPt) {
 
         double fractionalIndex = i + t;
         if (fractionalIndex > lastLookaheadPointIndex) {
-            xyCoord newLookAheadPoint = segmentStartPt + xyCoord{int(t * segmentDir[0]), int(t * segmentDir[1])};
+            infra_common::CellCoordinate p{int(t * segmentDir[0]), int(t * segmentDir[1])};
+            infra_common::CellCoordinate newLookAheadPoint = {segmentStartPt.x + p.x, segmentStartPt.y + p.y};
             lastLookaheadPoint = newLookAheadPoint;
             lastLookaheadPointIndex = fractionalIndex;
             return newLookAheadPoint;
@@ -145,36 +150,43 @@ xyCoord PurePursuitController::getLookaheadPoint(xyCoord currentPt) {
     return lastLookaheadPoint;
 }
 
-
-std::vector<double> PurePursuitController::getLinearVelocity(xyCoord currentPt) {
+geometry_msgs::msg::Vector3 PurePursuitController::getLinearVelocity(infra_common::CellCoordinate currentPt) {
     // returned vector should be of length 3 for ROS (velocity along x,y,z axes)
     int idx = getClosestPointIndex(currentPt);
     // TODO: check axis of travel is as assumed (if not, change this assumption in getAngularVelocity() as well)
-    return {targetVelocities.at(idx), 0, 0}; //maybe
+    geometry_msgs::msg::Vector3 v;
+    v.x = targetVelocities.at(idx);
+    v.y = 0;
+    v.z = 0;
+    return v;
 }
 
-
-std::vector<double> PurePursuitController::getAngularVelocity(xyCoord currentPt, double currentAngleRad, xyCoord lookaheadPt, std::vector<double> linearVelocity) {
+geometry_msgs::msg::Vector3 PurePursuitController::getAngularVelocity(
+    infra_common::CellCoordinate currentPt, double currentAngleRad, 
+    infra_common::CellCoordinate lookaheadPt, geometry_msgs::msg::Vector3 linearVelocity) {
     // returned vector should be of length 3 for ROS (angular velocity around x,y,z axes)
     // assuming positive angular.z turns the robot left (checked with embedded, positive is counter clockwise like the unit circle)
 
     double curvature = getArcCurvature(currentPt, currentAngleRad, lookaheadPt);
     int side = getSidePointIsOn(currentPt, currentAngleRad, lookaheadPt);
     double signedCurvature = side * curvature;
+    double angularVelocity = signedCurvature * linearVelocity.x;
 
-    double angularVelocity = curvature * linearVelocity[0];
-    return {0, 0, angularVelocity};
+    geometry_msgs::msg::Vector3 v;
+    v.x = 0;
+    v.y = 0;
+    v.z = angularVelocity;
+    return v;
 }
-
 
 // Helper Functions ------------------------------------------------------------
 
-int PurePursuitController::getClosestPointIndex(xyCoord startingPt) {
+size_t PurePursuitController::getClosestPointIndex(infra_common::CellCoordinate startingPt) {
     double minDist = std::numeric_limits<double>::infinity();
-    int minDistIndex = 0;
+    size_t minDistIndex = 0;
     // could optimize by storing last closest point index and starting from there
     // did not optimize because I'm thinking about other things rn and just need this to work
-    for (int i = 0; i < path.size(); i++) {
+    for (size_t i = 0; i < path.size(); i++) {
         int distance = sqrt(pow(path[i].x - startingPt.x, 2) + pow(path[i].y - startingPt.y, 2));
         if (distance < minDist) {
             minDist = distance;
@@ -184,8 +196,7 @@ int PurePursuitController::getClosestPointIndex(xyCoord startingPt) {
     return minDistIndex;
 }
 
-
-double PurePursuitController::getArcCurvature(xyCoord currentPt, double currentAngleRad, xyCoord lookaheadPt) {
+double PurePursuitController::getArcCurvature(infra_common::CellCoordinate currentPt, double currentAngleRad, infra_common::CellCoordinate lookaheadPt) {
     /* 
     imagine a triangle with sides: horizontal, vertical, hypotenuse, 
     with the robot at the corner of horizontal and hypotenuse and facing in the vertical direction,
@@ -204,8 +215,7 @@ double PurePursuitController::getArcCurvature(xyCoord currentPt, double currentA
     return (2 * horizontalOffset) / (lookaheadDist * lookaheadDist);
 }
 
-
-double PurePursuitController::getCurvatureAtPoint(xyCoord pt1, xyCoord pt2, xyCoord pt3) {
+double PurePursuitController::getCurvatureAtPoint(infra_common::CellCoordinate pt1, infra_common::CellCoordinate pt2, infra_common::CellCoordinate pt3) {
     double x1 = pt1.x + 0.00001;
     double k1 = 0.5 * (x1 *x1 + pt1.y * pt1.y - pt2.x*pt2.x - pt2.y *pt2.y) / (x1 - pt2.x);
     double k2 = (pt1.y - pt2.y) / (x1 - pt2.x);
@@ -216,25 +226,21 @@ double PurePursuitController::getCurvatureAtPoint(xyCoord pt1, xyCoord pt2, xyCo
     return c;
 }
 
-
-double PurePursuitController::getCurvatureAtPoint(int idx) {
+double PurePursuitController::getCurvatureAtPoint(size_t idx) {
     if (idx == 0 || idx == targetVelocities.size() - 1) {
         return 0;
     } else {
         return getCurvatureAtPoint(path.at(idx-1), path.at(idx), path.at(idx+1));
     }
-    
 }
 
-
-int PurePursuitController::getSidePointIsOn(xyCoord currentPt, double currentAngleRad, xyCoord targetPt) {
+int PurePursuitController::getSidePointIsOn(infra_common::CellCoordinate currentPt, double currentAngleRad, infra_common::CellCoordinate targetPt) {
     // convention: positive means target point is on the left
     // side is found by sign of cross product of robot direction vector and robot to lookahead point vector
-    xyCoord ptOnRobotLine = {currentPt.x + std::cos(currentAngleRad), currentPt.y + std::sin(currentAngleRad)};
+    infra_common::CellCoordinate ptOnRobotLine = {int(currentPt.x + std::cos(currentAngleRad)), int(currentPt.y + std::sin(currentAngleRad))};
     double crossProduct = (ptOnRobotLine.y - currentPt.y) * (targetPt.x - currentPt.x) - (ptOnRobotLine.x - currentPt.x) * (targetPt.y - currentPt.y);
     return -sgn(crossProduct); // TODO: check that this actually returns the correct side
 }
-
 
 // Math Functions --------------------------------------------------------------
 
@@ -246,27 +252,25 @@ int PurePursuitController::sgn(double num) {
     }
 }
 
-
 int PurePursuitController::dot(std::vector<int> vec1, std::vector<int> vec2) {
     if (vec1.size() != vec2.size()) {
         return 0;
     }
     int dotProduct = 0;
-    for (int i = 0; i < vec1.size(); i++) {
+    for (size_t i = 0; i < vec1.size(); i++) {
         dotProduct += vec1[i] * vec2[i];
     }
     return dotProduct;
 }
 
-
-double PurePursuitController::getAngleFromQuaternion(std::vector<double> q) {
+double PurePursuitController::getAngleFromQuaternion(geometry_msgs::msg::Quaternion q) {
     // returns angle robot is facing in radians
-    // assumes q is in the format (w, x, y, z) (typical format)
-    return std::atan2(2.0 * (q[0] * q[3] + q[1] * q[2]), 1.0 - 2.0 * (q[2] * q[2] + q[3] * q[3]));
+    return std::atan2(2.0 * (q.w * q.z + q.x * q.y), 1.0 - 2.0 * (q.y * q.y + q.z * q.z));
 }
-
 
 double PurePursuitController::distanceBetweenPoints(int idx1, int idx2) {
-    xyCoord pt1 = path.at(idx1), pt2 = path.at(idx2);
+    infra_common::CellCoordinate pt1 = path.at(idx1), pt2 = path.at(idx2);
     return std::sqrt(std::pow(pt1.x - pt2.x, 2) + std::pow(pt1.y - pt2.y, 2));
 }
+
+} // namespace controller_plugins
