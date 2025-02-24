@@ -5,22 +5,13 @@
 
 class DifferentialDrive {
 public:
-    DifferentialDrive(const Pose& startPose)
-        : pose(startPose){}
+    DifferentialDrive() = default;
 
-    const Pose& getState() const {
-        return pose;
-    }
+    DifferentialDrive(const Pose& startPose) : pose(startPose){}
 
-    void move(const Twist& twist, double dt) {
-        const double dx = (twist.linearVelocity) * std::cos(pose.Theta()) * dt;
-        const double dy = (twist.linearVelocity) * std::sin(pose.Theta()) * dt;
-        const double dtheta = twist.angularVelocity * dt;
+    const Pose& getState() const;
 
-        pose = Pose(pose.X() + dx, 
-                    pose.Y() + dy, 
-                    pose.Theta() + dtheta);
-    }
+    void move(const Twist& twist, double dt);
 
 private:
     Pose pose;
