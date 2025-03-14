@@ -1,5 +1,0 @@
-<library path="template_controller">
-  <class type="controller_plugins::TemplateController" base_class_type="plugin_base_classes::Controller">
-    <description>TODO: Controller description</description>
-  </class>
-</library>
