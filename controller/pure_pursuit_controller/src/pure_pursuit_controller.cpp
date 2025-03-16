@@ -27,7 +27,7 @@ PurePursuitController::PurePursuitController()
     // TODO: Load gains from parameter server
 }
 
-auto PurePursuitController::set_path(const std::vector<infra_common::CellCoordinate>& path) -> void {
+void PurePursuitController::set_path(const std::vector<infra_common::CellCoordinate>& path) {
     controller.setPath(toDiscretePath(path)); 
 }
 

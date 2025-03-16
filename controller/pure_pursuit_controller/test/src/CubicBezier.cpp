@@ -54,5 +54,5 @@ auto CubicBezier::toDiscretePath(std::size_t numSamples) const -> DiscretePath {
         path.push_back(getPoint(i * resolution));
     }
 
-    return path;
+    return DiscretePath(path);
 }

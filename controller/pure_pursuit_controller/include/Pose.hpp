@@ -9,6 +9,8 @@ class Pose {
 
     Pose(double x, double y, const Rotation& rotation);
 
+    Pose(double x, double y, double theta);
+
     auto getPoint() const -> const Point&;
 
     auto getRotation() const -> const Rotation&;

@@ -4,7 +4,7 @@ class Rotation {
     public:
     constexpr Rotation() = default;
 
-    Rotation(double theta);
+    explicit Rotation(double theta);
 
     Rotation(double x, double y);
 

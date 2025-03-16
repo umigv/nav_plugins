@@ -21,9 +21,9 @@ class PurePursuit {
         double lookAheadDistance;
     };
 
-    PurePursuit(const Gains& gains);
+    explicit PurePursuit(const Gains& gains);
 
-    auto setPath(const DiscretePath& path) -> void;
+    void setPath(const DiscretePath& path);
 
     auto step(const Pose& pose) const -> Twist;
 
@@ -47,8 +47,8 @@ class PurePursuit {
     Gains gains;
     DiscretePath path;
     mutable Trajectory trajectory;
-    mutable double minSearchIndex;
+    mutable double minSearchIndex{0.0};
     mutable DiscretePath::const_iterator closestPointIter;
     mutable Point lookAheadPoint;
-    mutable bool finished;
+    mutable bool finished{false};
 };

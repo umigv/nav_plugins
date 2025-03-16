@@ -10,8 +10,8 @@ class DiscretePath {
     using const_reverse_iterator = typename std::vector<Point>::const_reverse_iterator;
 
     DiscretePath() = default;
-    DiscretePath(const std::initializer_list<Point>& waypoint);
-    DiscretePath(const std::vector<Point>& waypoint);
+    explicit DiscretePath(const std::initializer_list<Point>& waypoint);
+    explicit DiscretePath(const std::vector<Point>& waypoint);
 
     auto begin() -> iterator;
     auto begin() const -> const_iterator;

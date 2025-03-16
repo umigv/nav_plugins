@@ -7,6 +7,9 @@ Pose::Pose(const Point& point, const Rotation& rotation)
 Pose::Pose(double x, double y, const Rotation& rotation) 
     : point(x, y), rotation(rotation) {}
 
+Pose::Pose(double x, double y, double theta) 
+    : point(x, y), rotation(theta) {}
+
 auto Pose::getPoint() const -> const Point& {
     return point;
 }
@@ -28,16 +31,16 @@ auto Pose::Theta() const -> double {
 }
 
 auto curvatureToPoint(const Pose& position, const Point& point) -> double {
-    const double sideL = std::sin(position.Theta()) * (point.X() - position.X()) - 
-                         std::cos(position.Theta()) * (point.Y() - position.Y());
+    const double sideL = position.getRotation().Sin() * (point.X() - position.X()) - 
+                         position.getRotation().Cos() * (point.Y() - position.Y());
 
     if (sideL == 0) {
         return 0;
     }
 
-    const double a = -std::tan(position.Theta());
+    const double a = -position.getRotation().Tan();
     const double b = 1;
-    const double c = std::tan(position.Theta()) * position.X() - position.Y();
+    const double c = position.getRotation().Tan() * position.X() - position.Y();
     const double x = std::abs(point.X() * a + point.Y() * b + c) / std::sqrt(a * a + b * b);
     const double chord = position.getPoint().distTo(point);
 

@@ -7,7 +7,7 @@ class DifferentialDrive {
 public:
     DifferentialDrive() = default;
 
-    DifferentialDrive(const Pose& startPose) : pose(startPose){}
+    explicit DifferentialDrive(const Pose& startPose) : pose(startPose){}
 
     auto getState() const -> const Pose&;
 

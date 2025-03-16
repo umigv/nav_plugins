@@ -8,7 +8,7 @@ Rotation::Rotation(double theta)
       sine(std::sin(theta)) {}
 
 Rotation::Rotation(double iX, double iY) {
-    const auto magnitude = hypot(iX, iY);
+    const auto magnitude = std::hypot(iX, iY);
     if (magnitude > 1e-6) {
         sine = (iY / magnitude);
         cosine = (iX / magnitude);

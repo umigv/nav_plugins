@@ -4,7 +4,7 @@
 
 PurePursuit::PurePursuit(const Gains& gains) : gains(gains) {}
 
-auto PurePursuit::setPath(const DiscretePath& path) -> void {
+void PurePursuit::setPath(const DiscretePath& path) {
     this->path = path;
     minSearchIndex = 0;
     trajectory = Trajectory(this->path, gains);
