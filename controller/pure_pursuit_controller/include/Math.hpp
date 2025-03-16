@@ -1,6 +1,11 @@
 #pragma once
 #include <optional>
 
-double constrainAngle180(double iAngle);
+struct QuadraticRoots{
+    double root1;
+    double root2;
+};
 
-std::optional<std::pair<double, double>> quadraticFormula(double a, double b, double c);
+auto constrainAngle180(double iAngle) -> double;
+
+auto quadraticFormula(double a, double b, double c) -> std::optional<QuadraticRoots>;

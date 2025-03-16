@@ -9,19 +9,19 @@ class Pose {
 
     Pose(double x, double y, const Rotation& rotation);
 
-    const Point& getPoint() const;
+    auto getPoint() const -> const Point&;
 
-    const Rotation& getRotation() const;
+    auto getRotation() const -> const Rotation&;
 
-    double X() const;
+    auto X() const -> double;
 
-    double Y() const;
+    auto Y() const -> double;
 
-    double Theta() const;
+    auto Theta() const -> double;
 
     private:
     Point point;
     Rotation rotation;
 };
 
-double curvatureToPoint(const Pose& position, const Point& point);
+auto curvatureToPoint(const Pose& position, const Point& point) -> double;

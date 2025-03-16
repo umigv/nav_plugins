@@ -9,7 +9,7 @@ public:
 
     DifferentialDrive(const Pose& startPose) : pose(startPose){}
 
-    const Pose& getState() const;
+    auto getState() const -> const Pose&;
 
     void move(const Twist& twist, double dt);
 

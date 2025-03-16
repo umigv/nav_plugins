@@ -1,6 +1,6 @@
 #include "DifferentialDrive.hpp"
 
-const Pose& DifferentialDrive::getState() const {
+auto DifferentialDrive::getState() const -> const Pose& {
     return pose;
 }
 

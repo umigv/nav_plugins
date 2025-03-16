@@ -2,57 +2,61 @@
 #include "Math.hpp"
 #include <cmath>
 
-Rotation::Rotation(double theta) : theta(constrainAngle180(theta)), cosine(std::cos(theta)), sine(std::sin(theta)){}
+Rotation::Rotation(double theta) 
+    : theta(constrainAngle180(theta)), 
+      cosine(std::cos(theta)), 
+      sine(std::sin(theta)) {}
 
 Rotation::Rotation(double iX, double iY) {
     const auto magnitude = hypot(iX, iY);
-    if(magnitude > 1e-6){
+    if (magnitude > 1e-6) {
         sine = (iY / magnitude);
         cosine = (iX / magnitude);
     } 
-    else{
+    else {
         sine = 0.0;
         cosine = 1.0;
     }
     theta = std::atan2(sine, cosine);
 }
 
-double Rotation::Theta() const {
+auto Rotation::Theta() const -> double {
     return theta;
 }
 
-double Rotation::Sin() const {
+auto Rotation::Sin() const -> double {
     return sine;
 }
 
-double Rotation::Cos() const {
+auto Rotation::Cos() const -> double {
     return cosine;
 }
 
-double Rotation::Tan() const {
+auto Rotation::Tan() const -> double {
     return sine / cosine;
 }
 
-Rotation Rotation::operator+(const Rotation& rhs) const {
+auto Rotation::operator+(const Rotation& rhs) const -> Rotation {
     return rotateBy(rhs);
 }
 
-Rotation Rotation::operator-(const Rotation& rhs) const {
+auto Rotation::operator-(const Rotation& rhs) const -> Rotation {
     return *this + -rhs;
 }
 
-Rotation Rotation::operator-() const {
+auto Rotation::operator-() const -> Rotation {
     return *this * -1;
 }
 
-Rotation Rotation::operator*(double scalar) const {
+auto Rotation::operator*(double scalar) const -> Rotation {
     return Rotation(theta * scalar);
 }
 
-Rotation Rotation::operator/(double scalar) const {
+auto Rotation::operator/(double scalar) const -> Rotation {
     return *this * (1.0 / scalar);
 }
 
-Rotation Rotation::rotateBy(const Rotation& rhs) const {
-    return Rotation((cosine * rhs.cosine - sine * rhs.sine), (cosine * rhs.sine + sine * rhs.cosine));
+auto Rotation::rotateBy(const Rotation& rhs) const -> Rotation {
+    return Rotation((cosine * rhs.cosine - sine * rhs.sine), 
+                    (cosine * rhs.sine + sine * rhs.cosine));
 }

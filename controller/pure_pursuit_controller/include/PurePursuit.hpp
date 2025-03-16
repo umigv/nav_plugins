@@ -9,10 +9,10 @@ class PurePursuit {
         public:
         Gains(double maxVelocity, double maxAcceleration, double trackWidth, double lookAheadDistance);
         
-        double MaxVelocity() const;
-        double MaxAcceleration() const;
-        double MaxAngularVelocity() const;
-        double LookAheadDistance() const;
+        auto MaxVelocity() const -> double;
+        auto MaxAcceleration() const -> double;
+        auto MaxAngularVelocity() const -> double;
+        auto LookAheadDistance() const -> double;
 
         private:
         double maxVelocity;
@@ -23,26 +23,26 @@ class PurePursuit {
 
     PurePursuit(const Gains& gains);
 
-    void setPath(const DiscretePath& path);
+    auto setPath(const DiscretePath& path) -> void;
 
-    Twist step(const Pose& pose) const;
+    auto step(const Pose& pose) const -> Twist;
 
-    bool isFinished() const;
+    auto isFinished() const -> bool;
 
     private:
-    class Trajectory{
+    class Trajectory {
         public:
         Trajectory() = default;
 
         Trajectory(const DiscretePath& path, const Gains& gains);
 
-        double operator[](size_t index) const;
+        auto operator[](size_t index) const -> double;
 
         private:
         std::vector<double> velocity;
     };
 
-    std::optional<Point> getLookaheadPoint(const Point& point) const;
+    auto getLookaheadPoint(const Point& point) const -> std::optional<Point>;
 
     Gains gains;
     DiscretePath path;

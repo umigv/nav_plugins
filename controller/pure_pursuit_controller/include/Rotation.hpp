@@ -8,25 +8,25 @@ class Rotation {
 
     Rotation(double x, double y);
 
-    double Theta() const;
+    auto Theta() const -> double;
 
-    double Sin() const;
+    auto Sin() const -> double;
 
-    double Cos() const;
+    auto Cos() const -> double;
 
-    double Tan() const;
+    auto Tan() const -> double;
 
-    Rotation operator+(const Rotation& rhs) const;
+    auto operator+(const Rotation& rhs) const -> Rotation;
 
-    Rotation operator-(const Rotation& rhs) const;
+    auto operator-(const Rotation& rhs) const -> Rotation;
 
-    Rotation operator-() const;
+    auto operator-() const -> Rotation;
 
-    Rotation operator*(double scalar) const;
+    auto operator*(double scalar) const -> Rotation;
 
-    Rotation operator/(double scalar) const;
+    auto operator/(double scalar) const -> Rotation;
 
-    Rotation rotateBy(const Rotation& rhs) const;
+    auto rotateBy(const Rotation& rhs) const -> Rotation;
 
     private:
     double theta{0.0};

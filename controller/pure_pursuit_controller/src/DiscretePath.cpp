@@ -6,67 +6,67 @@ DiscretePath::DiscretePath(const std::initializer_list<Point>& waypoint) : path(
 
 DiscretePath::DiscretePath(const std::vector<Point>& waypoint) : path(waypoint) {}
 
-DiscretePath::iterator DiscretePath::begin() {
+auto DiscretePath::begin() -> iterator {
     return path.begin();
 }
 
-DiscretePath::const_iterator DiscretePath::begin() const {
+auto DiscretePath::begin() const -> const_iterator {
     return path.begin();
 }
 
-DiscretePath::iterator DiscretePath::end() {
+auto DiscretePath::end() -> iterator {
     return path.end();
 }
 
-DiscretePath::const_iterator DiscretePath::end() const {
+auto DiscretePath::end() const -> const_iterator {
     return path.end();
 }
 
-DiscretePath::reverse_iterator DiscretePath::rbegin() {
+auto DiscretePath::rbegin() -> reverse_iterator {
     return path.rbegin();
 }
 
-DiscretePath::const_reverse_iterator DiscretePath::rbegin() const {
+auto DiscretePath::rbegin() const -> const_reverse_iterator {
     return path.rbegin();
 }
 
-DiscretePath::reverse_iterator DiscretePath::rend() {
+auto DiscretePath::rend() -> reverse_iterator {
     return path.rend();
 }
 
-DiscretePath::const_reverse_iterator DiscretePath::rend() const {
+auto DiscretePath::rend() const -> const_reverse_iterator {
     return path.rend();
 }
 
-Point& DiscretePath::operator[](std::size_t index) {
+auto DiscretePath::operator[](std::size_t index) -> Point& {
     return path[index];
 }
 
-const Point& DiscretePath::operator[](std::size_t index) const {
+auto DiscretePath::operator[](std::size_t index) const -> const Point& {
     return path[index];
 }
 
-Point& DiscretePath::front() {
+auto DiscretePath::front() -> Point& {
     return path.front();
 }
 
-const Point& DiscretePath::front() const {
+auto DiscretePath::front() const -> const Point& {
     return path.front();
 }
 
-Point& DiscretePath::back() {
+auto DiscretePath::back() -> Point& {
     return path.back();
 }
 
-const Point& DiscretePath::back() const {
+auto DiscretePath::back() const -> const Point& {
     return path.back();
 }
 
-std::size_t DiscretePath::size() const {
+auto DiscretePath::size() const -> std::size_t {
     return path.size();
 }
 
-double DiscretePath::getCurvature(std::size_t index) const {
+auto DiscretePath::getCurvature(std::size_t index) const -> double {
     if (index == 0 || index == path.size() - 1) {
         return 0;
     }
@@ -80,9 +80,9 @@ double DiscretePath::getCurvature(std::size_t index) const {
     return 1 / radius;
 }
 
-DiscretePath::const_iterator closestPoint(DiscretePath::const_iterator begin,
-                                          DiscretePath::const_iterator end,
-                                          const Point& point) {
+auto closestPoint(DiscretePath::const_iterator begin,
+                  DiscretePath::const_iterator end,
+                  const Point& point) -> DiscretePath::const_iterator {
     auto comparison = [point](const Point& a, const Point& b) { 
         return a.distTo(point) < b.distTo(point); 
     };

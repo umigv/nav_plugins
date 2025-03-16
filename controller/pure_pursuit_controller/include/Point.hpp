@@ -12,38 +12,38 @@ class Point {
 
     Point(double mag, const Rotation& angle);
 
-    double X() const;
+    auto X() const -> double;
 
-    double Y() const;
+    auto Y() const -> double;
 
-    Point operator+(const Point& rhs) const;
+    auto operator+(const Point& rhs) const -> Point;
 
-    Point operator-(const Point& rhs) const;
+    auto operator-(const Point& rhs) const -> Point;
 
-    Point operator-() const;
+    auto operator-() const -> Point;
 
-    Point operator*(double scalar) const;
+    auto operator*(double scalar) const -> Point;
 
-    Point operator/(double scalar) const;
+    auto operator/(double scalar) const -> Point;
 
-    double theta() const;
+    auto theta() const -> double;
 
-    double mag() const;
+    auto mag() const -> double;
 
-    double distTo(const Point& rhs) const;
+    auto distTo(const Point& rhs) const -> double;
 
-    double angleTo(const Point& rhs) const;
+    auto angleTo(const Point& rhs) const -> double;
 
-    double dot(const Point& rhs) const;
+    auto dot(const Point& rhs) const -> double;
 
-    Point rotateBy(const Rotation& rhs) const;
+    auto rotateBy(const Rotation& rhs) const -> Point;
 
     private:
     double x{0.0};
     double y{0.0};
 };
 
-double circumradius(const Point& left, const Point& mid, const Point& right);
+auto circumradius(const Point& left, const Point& mid, const Point& right) -> double;
 
-std::optional<double> circleLineIntersection(const Point& start, const Point& end, const Point& point,
-                                             double radius);
+auto circleLineIntersection(const Point& start, const Point& end, const Point& point, double radius) 
+    -> std::optional<double>;

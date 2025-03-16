@@ -13,29 +13,30 @@ class DiscretePath {
     DiscretePath(const std::initializer_list<Point>& waypoint);
     DiscretePath(const std::vector<Point>& waypoint);
 
-    iterator begin();
-    const_iterator begin() const;
-    iterator end();
-    const_iterator end() const;
+    auto begin() -> iterator;
+    auto begin() const -> const_iterator;
+    auto end() -> iterator;
+    auto end() const -> const_iterator;
 
-    reverse_iterator rbegin();
-    const_reverse_iterator rbegin() const;
-    reverse_iterator rend();
-    const_reverse_iterator rend() const;
+    auto rbegin() -> reverse_iterator;
+    auto rbegin() const -> const_reverse_iterator;
+    auto rend() -> reverse_iterator;
+    auto rend() const -> const_reverse_iterator;
 
-    Point& operator[](std::size_t index);
-    const Point& operator[](std::size_t index) const;
-    Point& front();
-    const Point& front() const;
-    Point& back();
-    const Point& back() const;
-    double getCurvature(std::size_t index) const;
-    std::size_t size() const;
+    auto operator[](std::size_t index) -> Point&;
+    auto operator[](std::size_t index) const -> const Point&;
+    auto front() -> Point&;
+    auto front() const -> const Point&;
+    auto back() -> Point&;
+    auto back() const -> const Point&;
+    auto getCurvature(std::size_t index) const -> double;
+    auto size() const -> std::size_t;
 
     private:
     std::vector<Point> path;
 };
 
-DiscretePath::const_iterator closestPoint(DiscretePath::const_iterator begin,
-                                          DiscretePath::const_iterator end, 
-                                          const Point& point);
+auto closestPoint(DiscretePath::const_iterator begin,
+                  DiscretePath::const_iterator end, 
+                  const Point& point) 
+    -> DiscretePath::const_iterator;

@@ -2,17 +2,17 @@
 #include "Point.hpp"
 #include "DiscretePath.hpp"
 
-class CubicBezier{
+class CubicBezier {
     public:
     class Knot {
         public:
         Knot(double x, double y, double theta, double magnitude);
 
-        const Point& getPoint() const;
+        auto getPoint() const -> const Point&;
 
-        const Point& getForwardControl() const;
+        auto getForwardControl() const -> const Point&;
 
-        const Point& getBackwardControl() const;
+        auto getBackwardControl() const -> const Point&;
 
         private:
         Point point;
@@ -22,13 +22,13 @@ class CubicBezier{
 
     CubicBezier(const Knot& start, const Knot& end);
 
-    Point getPoint(double t) const;
+    auto getPoint(double t) const -> Point;
 
-    Point getVelocity(double t) const;
+    auto getVelocity(double t) const -> Point;
 
-    Point getAcceleration(double t) const;
+    auto getAcceleration(double t) const -> Point;
 
-    DiscretePath toDiscretePath(std::size_t numSamples) const;
+    auto toDiscretePath(std::size_t numSamples) const -> DiscretePath;
 
     private:
     Point c0;
