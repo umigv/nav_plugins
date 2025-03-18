@@ -11,7 +11,7 @@ The `planner_server` node within `nav_infrastructure` dynamically loads a planne
     ```
     The base name should be in lower_snake_case and include only the planner name. For example, if you want to create my_test_planner, run:
     ```
-    ./create_plugin planner my_test
+    ./create_plugin.sh planner my_test
     ```
 - Go into `<name>_planner.cpp`, Using `straight_line_planner.cpp` or `bfs_planner.cpp` as reference, implement the `find_path()` function
 - When your plugin is finished, you'll need to test it using the `planner_server` within the `nav_infrastructure` repository
