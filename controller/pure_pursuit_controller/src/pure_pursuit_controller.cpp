@@ -3,11 +3,10 @@
 #include <cmath>
 
 static auto toPose(const geometry_msgs::msg::Pose& pose) -> Pose {
-    const double x = pose.orientation.x;
-    const double y = pose.orientation.y;
-    const double z = pose.orientation.z;
-    const double w = pose.orientation.w;
-    const double yaw = atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z));
+    // https://stackoverflow.com/a/18115837
+    const auto [x, y, z, w] = pose.orientation;
+    const double yaw = atan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y));
+    
     return Pose(pose.position.x, pose.position.y, yaw);
 }
 
