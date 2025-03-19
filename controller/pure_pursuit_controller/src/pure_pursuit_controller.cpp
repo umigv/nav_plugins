@@ -10,9 +10,9 @@ static auto toPose(const geometry_msgs::msg::Pose& pose) -> Pose {
     return Pose(pose.position.x, pose.position.y, yaw);
 }
 
-static auto toDiscretePath(const std::vector<geometry_msgs::msg::Point> &path) -> DiscretePath {
+static auto toDiscretePath(const std::vector<geometry_msgs::msg::Point>& path) -> DiscretePath {
     std::vector<Point> convertedPath(path.size());
-    std::transform(path.begin(), path.end(), convertedPath.begin(), [](const geometry_msgs::msg::Point& coordinate){
+    std::transform(path.begin(), path.end(), convertedPath.begin(), [](const geometry_msgs::msg::Point& coordinate) {
         return Point(coordinate.x, coordinate.y);
     });
     return DiscretePath(convertedPath);
@@ -32,7 +32,7 @@ PurePursuitController::PurePursuitController()
     // TODO: Load gains from parameter server
 }
 
-void PurePursuitController::set_path(const std::vector<geometry_msgs::msg::Point> &path){
+void PurePursuitController::set_path(const std::vector<geometry_msgs::msg::Point>& path) {
     controller.setPath(toDiscretePath(path)); 
 }
 
