@@ -1,8 +1,14 @@
 #include "pure_pursuit_controller.hpp"
 #include <vector>
+#include <cmath>
 
 static auto toPose(const geometry_msgs::msg::Pose& pose) -> Pose {
-    return Pose(pose.position.x, pose.position.y, pose.orientation.z);
+    double x = pose.orientation.x;
+    double y = pose.orientation.y;
+    double z = pose.orientation.z;
+    double w = pose.orientation.w;
+    double yaw = atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z));
+    return Pose(pose.position.x, pose.position.y, yaw);
 }
 
 static auto toDiscretePath(const std::vector<geometry_msgs::msg::Point> &path) -> DiscretePath {
