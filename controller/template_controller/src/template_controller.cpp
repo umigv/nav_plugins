@@ -2,7 +2,7 @@
 
 namespace controller_plugins{
 
-void TemplateController::set_path(const std::vector<infra_common::CellCoordinate>& path){
+void TemplateController::set_path(const std::vector<geometry_msgs::msg::Point> &path){
     (void)(path);
 }
 
