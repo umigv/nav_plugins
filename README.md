@@ -16,7 +16,7 @@ The `planner_server` node within `nav_infrastructure` dynamically loads a planne
 - Go into `<name>_planner.cpp`, Using `straight_line_planner.cpp` or `bfs_planner.cpp` as reference, implement the `find_path()` function
 - When your plugin is finished, you'll need to test it using the `planner_server` within the `nav_infrastructure` repository
     - If you haven't already cloned the `nav_infrastructure` repository, do so now: https://github.com/umigv/nav_infrastructure
-- Open `nav_infrastructure/planner_server/config/planner_server_params.yaml` and enter your plugin name into the `planner_plugin` parameter:
+- Open `nav_infrastructure/infra_launch/config/infra_params.yaml` and enter your plugin name into the `planner_plugin` parameter:
     ```yaml
     planner_plugin: "planner_plugins::<PluginName>"
     ```
