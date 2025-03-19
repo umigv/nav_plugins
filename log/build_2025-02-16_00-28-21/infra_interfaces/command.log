@@ -1,1 +1,0 @@
-Invoking command in '/home/arvuser/arv-ws/src/nav_infrastructure/build/infra_interfaces': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/arvuser/arv-ws/src/nav_infrastructure/infra_interfaces -DCMAKE_INSTALL_PREFIX=/home/arvuser/arv-ws/src/nav_infrastructure/install/infra_interfaces

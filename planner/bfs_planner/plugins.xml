@@ -1,0 +1,5 @@
+<library path="bfs_planner">
+  <class type="planner_plugins::BfsPlanner" base_class_type="plugin_base_classes::PathPlanner">
+    <description>BFS planner</description>
+  </class>
+</library>
