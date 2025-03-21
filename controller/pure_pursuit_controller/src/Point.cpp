@@ -59,6 +59,10 @@ auto Point::rotateBy(const Rotation& rhs) const -> Point {
     return {x * rhs.Cos() - y * rhs.Sin(), x * rhs.Sin() + y * rhs.Cos()};
 }
 
+auto lerp(const Point& start, const Point& end, double t) -> Point {
+    return start + (end - start) * t;
+}
+
 auto circumradius(const Point& left, const Point& mid, const Point& right) -> double {
     const Point& A = left;
     const Point& B = mid;

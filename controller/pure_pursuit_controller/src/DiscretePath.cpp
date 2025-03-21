@@ -2,9 +2,21 @@
 #include <cmath>
 #include <algorithm>
 
-DiscretePath::DiscretePath(const std::initializer_list<Point>& waypoint) : path(waypoint) {}
+DiscretePath::DiscretePath(const std::initializer_list<Point>& waypoint){
+    path.push_back(*waypoint.begin());
 
-DiscretePath::DiscretePath(const std::vector<Point>& waypoint) : path(waypoint) {}
+    for(auto it = waypoint.begin() + 1; it != waypoint.end(); ++it) {
+        insert(*it);
+    }
+}
+
+DiscretePath::DiscretePath(const std::vector<Point>& waypoint){
+    path.push_back(waypoint.front());
+
+    for(auto it = waypoint.begin() + 1; it != waypoint.end(); ++it) {
+        insert(*it);
+    }
+}
 
 auto DiscretePath::begin() -> iterator {
     return path.begin();
@@ -78,6 +90,15 @@ auto DiscretePath::getCurvature(std::size_t index) const -> double {
     }
 
     return 1 / radius;
+}
+
+auto DiscretePath::insert(const Point& point) -> void {
+    const Point start = path.back();
+    const std::size_t count = ceil(start.distTo(point) / RESOLUTION);
+
+    for(std::size_t i = 1; i <= count; ++i) {
+        path.push_back(lerp(start, point, static_cast<double>(i) / count));
+    }
 }
 
 auto closestPoint(DiscretePath::const_iterator begin,

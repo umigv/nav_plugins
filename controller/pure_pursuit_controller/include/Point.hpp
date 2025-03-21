@@ -43,6 +43,8 @@ class Point {
     double y{0.0};
 };
 
+auto lerp(const Point& start, const Point& end, double t) -> Point;
+
 auto circumradius(const Point& left, const Point& mid, const Point& right) -> double;
 
 auto circleLineIntersection(const Point& start, const Point& end, const Point& point, double radius) 

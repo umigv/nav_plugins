@@ -33,6 +33,9 @@ class DiscretePath {
     auto size() const -> std::size_t;
 
     private:
+    auto insert(const Point& point) -> void;
+
+    static constexpr auto RESOLUTION = 0.05;
     std::vector<Point> path;
 };
 
