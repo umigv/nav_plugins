@@ -33,7 +33,7 @@ auto PurePursuit::isFinished() const -> bool {
 }
 
 auto PurePursuit::getLookaheadPoint(const Point& point) const -> std::optional<Point> {
-    for (std::size_t i = static_cast<std::size_t>(minSearchIndex); i < path.size(); i++) {
+    for (std::size_t i = static_cast<std::size_t>(minSearchIndex); i < path.size() - 1; i++) {
         const Point& start = path[i];
         const Point& end = path[i + 1];
         const auto t = circleLineIntersection(start, end, point, gains.LookAheadDistance());
