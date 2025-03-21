@@ -15,6 +15,7 @@ RCLCPP_INFO(rclcpp::get_logger("StraightLinePlanner"), "StraightLinePlanner find
 // Straight line planner: just goes up in a straight line until it reaches the goal
 // or hits an obstacle
 std::vector<CellCoordinate> path;
+path.push_back(start);
 CellCoordinate curr = start;
 while (true) 
 {
