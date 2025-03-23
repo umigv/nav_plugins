@@ -3,6 +3,7 @@
 #include <cmath>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Matrix3x3.h>
+#include <iostream>
 
 static auto yawFromQuartenion(const geometry_msgs::msg::Quaternion& quaternion_msg) -> double {
     tf2::Quaternion quaternion;
@@ -15,7 +16,7 @@ static auto yawFromQuartenion(const geometry_msgs::msg::Quaternion& quaternion_m
     tf2::Matrix3x3 matrix(quaternion);
     double roll, pitch, yaw;
     matrix.getRPY(roll, pitch, yaw);
-    return yaw;
+    return -1 * yaw;
 }
 
 static auto toPose(const geometry_msgs::msg::Pose& pose) -> Pose {
@@ -52,7 +53,8 @@ void PurePursuitController::set_path(const std::vector<geometry_msgs::msg::Point
 auto PurePursuitController::compute_next_command_velocity(
     const geometry_msgs::msg::Pose& current_pose, 
     [[maybe_unused]] const geometry_msgs::msg::Twist& current_velocity) -> geometry_msgs::msg::Twist {
-    const Twist result = controller.step(toPose(current_pose));
+    const Pose pose = toPose(current_pose);
+    const Twist result = controller.step(pose);
     return toTwist(result);
 }
 
