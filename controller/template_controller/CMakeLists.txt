@@ -12,6 +12,7 @@ find_package(plugin_base_classes REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(infra_common REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 pluginlib_export_plugin_description_file(plugin_base_classes plugins.xml)
 
@@ -30,6 +31,7 @@ ament_target_dependencies(
   "pluginlib"
   "rclcpp"
   "infra_common"
+  "geometry_msgs"
 )
 
 install(

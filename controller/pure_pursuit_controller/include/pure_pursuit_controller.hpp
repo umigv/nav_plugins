@@ -2,6 +2,9 @@
 #include "plugin_base_classes/controller.hpp"
 
 #include "rclcpp/rclcpp.hpp"
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2/LinearMath/Matrix3x3.h>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -12,7 +15,7 @@ namespace controller_plugins{
 
 class PurePursuitController : public plugin_base_classes::Controller{
 public:
-    void set_path(const std::vector<infra_common::CellCoordinate> &path) override;
+    void set_path(const std::vector<geometry_msgs::msg::Point> &path) override;
 
     geometry_msgs::msg::Twist compute_next_command_velocity(
         const geometry_msgs::msg::Pose &current_pose, 
@@ -22,38 +25,38 @@ public:
 
 private:
     // Parameters:
-    int spacing;
+    double spacing;
     double maxVelocity;
     double maxAcceleration;
     double trackWidth;
-    int lookaheadDist;
+    double lookaheadDist;
     double kTurnConstant;
 
     // member variables
-    std::vector<infra_common::CellCoordinate> path;
+    std::vector<geometry_msgs::msg::Point> path;
     std::vector<double> targetVelocities;
-    infra_common::CellCoordinate lastLookaheadPoint;
+    geometry_msgs::msg::Point lastLookaheadPoint;
     double lastLookaheadPointIndex;
     bool pathFinished;
 
     // core functions
-    void fillPath(const std::vector<infra_common::CellCoordinate> &path_in);
+    void fillPath(const std::vector<geometry_msgs::msg::Point> &path_in);
     void fillTargetVelocities();
-    infra_common::CellCoordinate getLookaheadPoint(infra_common::CellCoordinate currentPt);
-    geometry_msgs::msg::Vector3 getLinearVelocity(infra_common::CellCoordinate currentPt);
-    geometry_msgs::msg::Vector3 getAngularVelocity(infra_common::CellCoordinate currentPt, double currentAngleRad, infra_common::CellCoordinate lookaheadPt, geometry_msgs::msg::Vector3 linearVelocity);
+    geometry_msgs::msg::Point getLookaheadPoint(geometry_msgs::msg::Point currentPt);
+    geometry_msgs::msg::Vector3 getLinearVelocity(geometry_msgs::msg::Point currentPt);
+    geometry_msgs::msg::Vector3 getAngularVelocity(geometry_msgs::msg::Point currentPt, double currentAngleRad, geometry_msgs::msg::Point lookaheadPt, geometry_msgs::msg::Vector3 linearVelocity);
 
     // helper functions
-    size_t getClosestPointIndex(infra_common::CellCoordinate startingPt);
-    double getArcCurvature(infra_common::CellCoordinate currentPt, double currentAngleRad, infra_common::CellCoordinate lookaheadPt);
-    double getCurvatureAtPoint(infra_common::CellCoordinate pt1, infra_common::CellCoordinate pt2, infra_common::CellCoordinate pt3);
+    size_t getClosestPointIndex(geometry_msgs::msg::Point startingPt);
+    double getArcCurvature(geometry_msgs::msg::Point currentPt, double currentAngleRad, geometry_msgs::msg::Point lookaheadPt);
+    double getCurvatureAtPoint(geometry_msgs::msg::Point pt1, geometry_msgs::msg::Point pt2, geometry_msgs::msg::Point pt3);
     double getCurvatureAtPoint(size_t idx);
-    int getSidePointIsOn(infra_common::CellCoordinate currentPt, double currentAngleRad, infra_common::CellCoordinate targetPt);
+    int getSidePointIsOn(geometry_msgs::msg::Point currentPt, double currentAngleRad, geometry_msgs::msg::Point targetPt);
     void smoothPath(); // not priority
 
     // math functions
     int sgn(double num);
-    int dot(std::vector<int> vec1, std::vector<int> vec2);
+    int dot(std::vector<double> vec1, std::vector<double> vec2);
     double getAngleFromQuaternion(geometry_msgs::msg::Quaternion q);
     double distanceBetweenPoints(int idx1, int idx2);
 };
