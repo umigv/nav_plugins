@@ -1,15 +1,25 @@
 #include "pure_pursuit_controller.hpp"
 #include <vector>
 #include <cmath>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2/LinearMath/Matrix3x3.h>
+
+static auto yawFromQuartenion(const geometry_msgs::msg::Quaternion& quaternion_msg) -> double {
+    tf2::Quaternion quaternion;
+    quaternion.setValue(
+        quaternion_msg.x,
+        quaternion_msg.y,
+        quaternion_msg.z,
+        quaternion_msg.w 
+    );
+    tf2::Matrix3x3 matrix(quaternion);
+    double roll, pitch, yaw;
+    matrix.getRPY(roll, pitch, yaw);
+    return yaw;
+}
 
 static auto toPose(const geometry_msgs::msg::Pose& pose) -> Pose {
-    // https://stackoverflow.com/a/18115837
-    const double x = pose.orientation.x;
-    const double y = pose.orientation.y;
-    const double z = pose.orientation.z;
-    const double w = pose.orientation.w;
-    const double yaw = atan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y));
-    
+    const double yaw = yawFromQuartenion(pose.orientation);
     return Pose(pose.position.x, pose.position.y, yaw);
 }
 
