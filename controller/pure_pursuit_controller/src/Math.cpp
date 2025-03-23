@@ -20,8 +20,7 @@ auto quadraticFormula(double a, double b, double c) -> std::optional<QuadraticRo
         return std::nullopt;
     }
 
-    return std::make_optional<QuadraticRoots>({
-        (-b - std::sqrt(discriminant)) / (2 * a),
-        (-b + std::sqrt(discriminant)) / (2 * a)
-    });
+    double root1 = (-b - std::sqrt(discriminant)) / (2 * a);
+    double root2 = (-b + std::sqrt(discriminant)) / (2 * a);
+    return std::make_optional<QuadraticRoots>(root1, root2);
 }
