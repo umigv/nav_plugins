@@ -5,7 +5,7 @@ namespace controller_plugins{
 
 class TemplateController : public plugin_base_classes::Controller{
 public:
-    void set_path(const std::vector<infra_common::CellCoordinate> &path) override;
+    void set_path(const std::vector<geometry_msgs::msg::Point> &path) override;
 
     geometry_msgs::msg::Twist compute_next_command_velocity(
         const geometry_msgs::msg::Pose &current_pose, 
