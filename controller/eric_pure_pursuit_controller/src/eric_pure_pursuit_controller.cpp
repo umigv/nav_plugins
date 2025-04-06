@@ -20,8 +20,8 @@ geometry_msgs::msg::Twist EricPurePursuitController::compute_next_command_veloci
         return geometry_msgs::msg::Twist();  // Stop
     }
 
-    double local_x = lookahead_point->x - current_pose.position.x;
-    double local_y = lookahead_point->y - current_pose.position.y;
+    double local_x = lookahead_point->x;
+    double local_y = lookahead_point->y;
     double curvature = 2 * local_y / (local_x * local_x + local_y * local_y);
     double dist = std::hypot(local_x, local_y);
 
@@ -68,7 +68,10 @@ std::optional<geometry_msgs::msg::Point> EricPurePursuitController::findLookahea
 
         // Prevents driving backwards or directly to the side
         if (local_x > 0.05 && dist >= lookaheadDistance) {
-            return point;
+            geometry_msgs::msg::Point local_point;
+            local_point.x = dx;
+            local_point.y = dy;
+            return local_point;
         }
     }
 
