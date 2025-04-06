@@ -28,7 +28,6 @@ private:
     double spacing;
     double maxVelocity;
     double maxAcceleration;
-    double trackWidth;
     double lookaheadDist;
     double kTurnConstant;
 
@@ -56,7 +55,7 @@ private:
 
     // math functions
     int sgn(double num);
-    int dot(std::vector<double> vec1, std::vector<double> vec2);
+    double dot(std::vector<double> vec1, std::vector<double> vec2);
     double getAngleFromQuaternion(geometry_msgs::msg::Quaternion q);
     double distanceBetweenPoints(int idx1, int idx2);
 };

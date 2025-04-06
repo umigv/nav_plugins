@@ -6,14 +6,13 @@ void PurePursuitController::set_path(const std::vector<geometry_msgs::msg::Point
     RCLCPP_INFO(rclcpp::get_logger("PurePursuitController"), "PurePursuitController setting path");
 
     // TODO: parameters to tune
-    spacing = 0.25;
-    lookaheadDist = 3;
-    kTurnConstant = 2;
+    spacing = 0.01;
+    lookaheadDist = .3;
+    kTurnConstant = 3;
 
     // high priority TODO: parameters to fill in
     maxVelocity = 1;
     maxAcceleration = 1;
-    trackWidth = 2.5;
 
     // general initialization
     pathFinished = false;
@@ -66,10 +65,11 @@ bool PurePursuitController::is_finished() const{
 // Core Functions --------------------------------------------------------------
 
 void PurePursuitController::fillPath(const std::vector<geometry_msgs::msg::Point> &path_in) {
-    for (size_t i = 0; i < path_in.size() - 1; i++)
+    for (size_t i = 0; i < path_in.size() - 2; i++)
     {
+        // std::cout << "Path " << i << " coordinates: " << path_in[i].x << ", " << path_in[i].y << std::endl;
         geometry_msgs::msg::Point start = path_in[i], next = path_in[i+1];
-        geometry_msgs::msg::Point vec;
+        geometry_msgs::msg::Point vec, pathPoint;
         vec.x = next.x - start.x;
         vec.y = next.y - start.y;
         vec.z = 0.0;
@@ -77,11 +77,15 @@ void PurePursuitController::fillPath(const std::vector<geometry_msgs::msg::Point
         int numPts = ceil(magnitude / spacing);
         vec.x = vec.x / magnitude * spacing;
         vec.y = vec.y / magnitude * spacing;
-        for (int i = 0; i < numPts; ++i)
+        // std::cout << "Path " << i << " coordinates: " << vec.x << ", " << vec.y << std::endl
+        //  << "NumPoints: " << numPts << std::endl;
+        for (int j = 0; j < numPts; ++j)
         {
-            vec.x = start.x + vec.x * i;
-            vec.y = start.y + vec.y * i;
-            path.push_back(vec);
+            // std::cout << "start at path_in[" << i << "] coordinates: " << start.x << ", " << start.y << std::endl;
+            pathPoint.x = start.x + vec.x * j;
+            pathPoint.y = start.y + vec.y * j;
+            // std::cout << "VelPath " << i+j << " coordinates: " << pathPoint.x << ", " << pathPoint.y << std::endl;
+            path.push_back(pathPoint);
         }
     }
     path.push_back(path_in[path_in.size() - 1]);
@@ -106,16 +110,16 @@ void PurePursuitController::fillTargetVelocities() {
     
 }
 
+//TODO: getLookaheadPoint() not working rn
 geometry_msgs::msg::Point PurePursuitController::getLookaheadPoint(geometry_msgs::msg::Point currentPt) {
     // find index of closest point, to start search at
     int closestPointIndex = getClosestPointIndex(currentPt);
-
     // loop through the next line segments looking for an intersection
     for (size_t i = closestPointIndex; i < path.size() - 1; i++) {
         // get line segment
         geometry_msgs::msg::Point segmentStartPt = path[i];
         geometry_msgs::msg::Point segmentEndPt = path[i+1];
-
+        
         // calculate necessary vectors
         std::vector<double> segmentDir = {segmentEndPt.x - segmentStartPt.x, segmentEndPt.y - segmentStartPt.y};
         std::vector<double> toStart = {segmentStartPt.x - currentPt.x, segmentStartPt.y - currentPt.y};
@@ -128,25 +132,29 @@ geometry_msgs::msg::Point PurePursuitController::getLookaheadPoint(geometry_msgs
 
         // get t value of intersection
         double t = -1;
-        if (discriminant >= 0) {
+        if (discriminant >= 0) { // check these maybe???
             discriminant = std::sqrt(discriminant);
             double t1 = (-b - discriminant) / (2 * a);
-            double t2 = (-b + discriminant) / (2 * a);
+            double t2 = (-b + discriminant) / (2 * a); 
 
             if (t1 >= 0 && t1 <=1) {
                 t = t1;
+                std::cout << "POTENTIAL INTERSECTION: " << t1 << "\n";
             }
             if (t2 >= 0 && t2 <=1) {
                 t = t2;
-            }
+                std::cout << "POTENTIAL INTERSECTION: " << t2 << "\n";
+            } // these never run either
         }
         // if it's not a valid intersection, keep searching
         if (t < 0 || t > 1) {
             continue;
+        } else {
+            std::cout << "VALID INTERSECTION\n"; //never called maybe?
         }
-
         double fractionalIndex = i + t;
-        if (fractionalIndex > lastLookaheadPointIndex) {
+        std::cout << "ClosestPtIDX: " << closestPointIndex << "\nFractionalIDX: " << fractionalIndex << std::endl;
+        if (fractionalIndex >= lastLookaheadPointIndex) {
             geometry_msgs::msg::Point p;
             p.x = t * segmentDir[0];
             p.y = t * segmentDir[1];
@@ -157,12 +165,13 @@ geometry_msgs::msg::Point PurePursuitController::getLookaheadPoint(geometry_msgs
             newLookAheadPoint.z = 0.0;
             lastLookaheadPoint = newLookAheadPoint;
             lastLookaheadPointIndex = fractionalIndex;
-            return newLookAheadPoint;
+            std::cout << "New Lookahead Point: " << newLookAheadPoint.x << ", " << newLookAheadPoint.y << std::endl;
+            return newLookAheadPoint; 
         }
     }
-
+    std::cout << "Last Lookahead Point: " << lastLookaheadPoint.x << ", " << lastLookaheadPoint.y << std::endl;
     // if no lookahead point has been returned, return the last lookahead point
-    return lastLookaheadPoint;
+    return lastLookaheadPoint; // maybe return optional rather than last??? idk
 }
 
 geometry_msgs::msg::Vector3 PurePursuitController::getLinearVelocity(geometry_msgs::msg::Point currentPt) {
@@ -182,15 +191,15 @@ geometry_msgs::msg::Vector3 PurePursuitController::getAngularVelocity(
     // returned vector should be of length 3 for ROS (angular velocity around x,y,z axes)
     // assuming positive angular.z turns the robot left (checked with embedded, positive is counter clockwise like the unit circle)
 
-    double curvature = getArcCurvature(currentPt, currentAngleRad, lookaheadPt);
+    double curvature = getArcCurvature(currentPt, currentAngleRad, lookaheadPt); // returns 0 due to not recieving lookahead pt
     int side = getSidePointIsOn(currentPt, currentAngleRad, lookaheadPt);
     double signedCurvature = side * curvature;
     double angularVelocity = signedCurvature * linearVelocity.x;
-
+    std::cout << "lookahead point: " << lookaheadPt.x << ", " << lookaheadPt.y << "\nCurrentAngleRad: " << currentAngleRad << "\nsignedCurvature: " << signedCurvature <<"\nAngular Velocity: " << angularVelocity << std::endl;
     geometry_msgs::msg::Vector3 v;
     v.x = 0;
     v.y = 0;
-    v.z = angularVelocity;
+    v.z = std::min(angularVelocity, 1.0);
     return v;
 }
 
@@ -202,7 +211,8 @@ size_t PurePursuitController::getClosestPointIndex(geometry_msgs::msg::Point sta
     // could optimize by storing last closest point index and starting from there
     // did not optimize because I'm thinking about other things rn and just need this to work
     for (size_t i = 0; i < path.size(); i++) {
-        int distance = sqrt(pow(path[i].x - startingPt.x, 2) + pow(path[i].y - startingPt.y, 2));
+        double distance = sqrt(pow(path[i].x - startingPt.x, 2) + pow(path[i].y - startingPt.y, 2));
+        // std::cout << "Distance from " << startingPt.x << ", " << startingPt.y << " to " << path[i].x << ", " << path[i].y << ": " << distance << std::endl;
         if (distance < minDist) {
             minDist = distance;
             minDistIndex = i;
@@ -270,7 +280,7 @@ int PurePursuitController::sgn(double num) {
     }
 }
 
-int PurePursuitController::dot(std::vector<double> vec1, std::vector<double> vec2) {
+double PurePursuitController::dot(std::vector<double> vec1, std::vector<double> vec2) {
     if (vec1.size() != vec2.size()) {
         return 0;
     }
