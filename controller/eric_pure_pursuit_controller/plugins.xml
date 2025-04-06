@@ -1,0 +1,5 @@
+<library path="eric_pure_pursuit_controller">
+  <class type="controller_plugins::EricPurePursuitController" base_class_type="plugin_base_classes::Controller">
+    <description>TODO: Controller description</description>
+  </class>
+</library>
