@@ -1,16 +1,33 @@
 #include "PurePursuit.hpp"
 #include <cmath>
 #include <iostream>
+#include "rclcpp/rclcpp.hpp"
 
 PurePursuit::PurePursuit(const Gains& gains) : gains(gains) {}
 
 void PurePursuit::setPath(const DiscretePath& path) {
+    const auto pointsEqual = [](const Point& a, const Point& b) {
+        const double dx = std::abs(a.X() - b.X());
+        const double dy = std::abs(a.Y() - b.Y());
+        return dx < 1e-3 && dy < 1e-3;
+    };
+
+    if(std::equal(path.begin(), path.end(), this->path.begin(), this->path.end(), pointsEqual)) {
+        //RCLCPP_INFO(rclcpp::get_logger("PurePursuit"), "Path already set");
+        return;
+    }
+
     this->path = path;
     minSearchIndex = 0;
     trajectory = Trajectory(this->path, gains);
     closestPointIter = this->path.begin();
     lookAheadPoint = this->path.front();
     finished = false;
+
+    RCLCPP_INFO(rclcpp::get_logger("PurePursuit"), "Path set with %zu points", path.size());
+    for(const auto& point : path) {
+        RCLCPP_INFO(rclcpp::get_logger("PurePursuit"), "Path point: (%f, %f)", point.X(), point.Y());
+    }
 }
 
 auto PurePursuit::step(const Pose& pose) const -> Twist {
@@ -19,10 +36,12 @@ auto PurePursuit::step(const Pose& pose) const -> Twist {
     }
 
     if (pose.getPoint().distTo(path.back()) < gains.LookAheadDistance()) {
+        RCLCPP_INFO(rclcpp::get_logger("PurePursuit"), "Finished path");
         finished = true;
         return Twist{0, 0};
     }
 
+    RCLCPP_INFO(rclcpp::get_logger("PurePursuit"), "Current pose: (%f, %f, %f)", pose.X(), pose.Y(), pose.Theta());
     closestPointIter = closestPoint(closestPointIter, path.end(), pose.getPoint());
     lookAheadPoint = getLookaheadPoint(pose.getPoint()).value_or(lookAheadPoint);
     const std::size_t closestPointIndex = closestPointIter - path.begin();

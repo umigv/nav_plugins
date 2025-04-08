@@ -16,7 +16,7 @@ static auto yawFromQuartenion(const geometry_msgs::msg::Quaternion& quaternion_m
     tf2::Matrix3x3 matrix(quaternion);
     double roll, pitch, yaw;
     matrix.getRPY(roll, pitch, yaw);
-    return -1 * yaw;
+    return yaw;
 }
 
 static auto toPose(const geometry_msgs::msg::Pose& pose) -> Pose {
