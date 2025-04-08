@@ -48,7 +48,7 @@ PurePursuitController::PurePursuitController()
     path_sub_ = this->create_subscription<nav_msgs::msg::Path>(
         "/path", 10, std::bind(&PurePursuitController::path_callback, this, std::placeholders::_1));
 
-    cmd_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
+    cmd_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/joy_cmd_vel", 10);
 
     control_timer_ = this->create_wall_timer(
         std::chrono::milliseconds(100),
