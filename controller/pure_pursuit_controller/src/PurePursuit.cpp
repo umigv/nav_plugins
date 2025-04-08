@@ -14,6 +14,10 @@ void PurePursuit::setPath(const DiscretePath& path) {
 }
 
 auto PurePursuit::step(const Pose& pose) const -> Twist {
+    if(path.size() == 0 || finished) {
+        return Twist{0, 0};
+    }
+
     if (pose.getPoint().distTo(path.back()) < gains.LookAheadDistance()) {
         finished = true;
         return Twist{0, 0};

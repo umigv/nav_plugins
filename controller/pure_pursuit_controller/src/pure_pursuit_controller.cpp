@@ -39,27 +39,54 @@ static auto toTwist(const Twist& twist) -> geometry_msgs::msg::Twist {
     return result;
 }
 
-namespace controller_plugins {
-
 PurePursuitController::PurePursuitController() 
-    : controller(PurePursuit::Gains(1, 1, 0.8, 0.152)) {
-    // TODO: Load gains from parameter server
+    : rclcpp::Node("Pure_Pursuit_Controller"), controller(PurePursuit::Gains(0.4, 100, 2, 0.3)) {
+
+    odom_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
+        "/odom", 10, std::bind(&PurePursuitController::odom_callback, this, std::placeholders::_1));
+
+    path_sub_ = this->create_subscription<nav_msgs::msg::Path>(
+        "/path", 10, std::bind(&PurePursuitController::path_callback, this, std::placeholders::_1));
+
+    cmd_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
+
+    control_timer_ = this->create_wall_timer(
+        std::chrono::milliseconds(100),
+        std::bind(&PurePursuitController::step, this)
+    );
 }
 
 void PurePursuitController::set_path(const std::vector<geometry_msgs::msg::Point>& path) {
     controller.setPath(toDiscretePath(path)); 
 }
 
-auto PurePursuitController::compute_next_command_velocity(
-    const geometry_msgs::msg::Pose& current_pose, 
-    [[maybe_unused]] const geometry_msgs::msg::Twist& current_velocity) -> geometry_msgs::msg::Twist {
+void PurePursuitController::step() {
     const Pose pose = toPose(current_pose);
     const Twist result = controller.step(pose);
-    return toTwist(result);
+    cmd_pub_->publish(toTwist(result));
 }
 
 auto PurePursuitController::is_finished() const -> bool {
     return controller.isFinished();
 }
 
-} // namespace controller_plugins
+void PurePursuitController::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg){
+    current_pose = msg->pose.pose;
+}
+
+void PurePursuitController::path_callback(const nav_msgs::msg::Path::SharedPtr msg){
+    std::vector<geometry_msgs::msg::Point> path;
+    for (const auto& pose : msg->poses) {
+        path.push_back(pose.pose.position);
+    }
+
+    set_path(path);
+}
+
+int main(int argc, char **argv)
+{
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<PurePursuitController>());
+    rclcpp::shutdown();
+    return 0;
+}

@@ -17,7 +17,7 @@ find_package(tf2 REQUIRED)
 
 pluginlib_export_plugin_description_file(plugin_base_classes plugins.xml)
 
-add_library(${PROJECT_NAME} 
+add_executable(${PROJECT_NAME} 
   src/pure_pursuit_controller.cpp
   src/DiscretePath.cpp
   src/Math.cpp
@@ -49,10 +49,7 @@ install(
 
 install(
   TARGETS pure_pursuit_controller
-  EXPORT export_${PROJECT_NAME}
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
@@ -66,15 +63,5 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
-ament_export_include_directories(
-  include
-)
-ament_export_libraries(
-  pure_pursuit_controller
-)
-ament_export_targets(
-  export_${PROJECT_NAME}
-)
 
 ament_package()
