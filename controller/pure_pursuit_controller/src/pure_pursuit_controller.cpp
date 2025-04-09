@@ -136,24 +136,20 @@ geometry_msgs::msg::Point PurePursuitController::getLookaheadPoint(geometry_msgs
             discriminant = std::sqrt(discriminant);
             double t1 = (-b - discriminant) / (2 * a);
             double t2 = (-b + discriminant) / (2 * a); 
-
             if (t1 >= 0 && t1 <=1) {
                 t = t1;
-                std::cout << "POTENTIAL INTERSECTION: " << t1 << "\n";
             }
             if (t2 >= 0 && t2 <=1) {
                 t = t2;
-                std::cout << "POTENTIAL INTERSECTION: " << t2 << "\n";
-            } // these never run either
+            } 
         }
         // if it's not a valid intersection, keep searching
         if (t < 0 || t > 1) {
             continue;
         } else {
-            std::cout << "VALID INTERSECTION\n"; //never called maybe?
+            std::cout << "VALID INTERSECTION\n"; 
         }
         double fractionalIndex = i + t;
-        std::cout << "ClosestPtIDX: " << closestPointIndex << "\nFractionalIDX: " << fractionalIndex << std::endl;
         if (fractionalIndex >= lastLookaheadPointIndex) {
             geometry_msgs::msg::Point p;
             p.x = t * segmentDir[0];
@@ -199,7 +195,7 @@ geometry_msgs::msg::Vector3 PurePursuitController::getAngularVelocity(
     geometry_msgs::msg::Vector3 v;
     v.x = 0;
     v.y = 0;
-    v.z = std::min(angularVelocity, 1.0);
+    v.z = side * std::min(std::abs(angularVelocity), 10.0);
     return v;
 }
 
@@ -230,6 +226,10 @@ double PurePursuitController::getArcCurvature(geometry_msgs::msg::Point currentP
     horizontal is horizontalOffset.
     */
 
+    if (currentAngleRad < 0)
+    {
+        currentAngleRad = 2 * 3.14159 + currentAngleRad;
+    }
     // calculate horizontal offset from lookahead point
     double a = -std::tan(currentAngleRad);
     double b = 1;
@@ -263,10 +263,16 @@ int PurePursuitController::getSidePointIsOn(geometry_msgs::msg::Point currentPt,
     // convention: positive means target point is on the left
     // side is found by sign of cross product of robot direction vector and robot to lookahead point vector
     geometry_msgs::msg::Point ptOnRobotLine;
+    if (currentAngleRad < 0)
+    {
+        currentAngleRad = 2 * 3.14159 + currentAngleRad;
+    }
+    
     ptOnRobotLine.x = currentPt.x + std::cos(currentAngleRad);
-    ptOnRobotLine.y = currentPt.y + std::sin(currentAngleRad);
+    ptOnRobotLine.y = currentPt.y - std::sin(currentAngleRad);
     ptOnRobotLine.z = 0.0;
     double crossProduct = (ptOnRobotLine.y - currentPt.y) * (targetPt.x - currentPt.x) - (ptOnRobotLine.x - currentPt.x) * (targetPt.y - currentPt.y);
+    std::cout << "CROSS PRODUCT: " << crossProduct << std::endl << "ptOnRobotLine: " << ptOnRobotLine.x << ", " << ptOnRobotLine.y << std::endl;
     return -sgn(crossProduct); // TODO: check that this actually returns the correct side
 }
 
@@ -282,9 +288,9 @@ int PurePursuitController::sgn(double num) {
 
 double PurePursuitController::dot(std::vector<double> vec1, std::vector<double> vec2) {
     if (vec1.size() != vec2.size()) {
-        return 0;
+        return 0; 
     }
-    int dotProduct = 0;
+    double dotProduct = 0;
     for (size_t i = 0; i < vec1.size(); i++) {
         dotProduct += vec1[i] * vec2[i];
     }
