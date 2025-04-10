@@ -113,12 +113,23 @@ std::vector<CellCoordinate> AstarPlanner::find_path(const Costmap &costmap,
         const CellCoordinate &start,
         const CellCoordinate &goal) 
 {
-    RCLCPP_INFO(rclcpp::get_logger("AstarPlanner"), "AstarPlanner finding path");
+    rclcpp::Time now = rclcpp::Clock().now();
+    int64_t sec = now.seconds();
+    int64_t nanosec = now.nanoseconds();
+    int64_t millisec = (nanosec / 1000000) % 1000;
+    RCLCPP_INFO(rclcpp::get_logger("AstarPlanner"),
+            "AstarPlanner finding path at time: %ld.%03ld", sec, millisec);
     std::pair<int, int> start_ = {start.x, start.y};
     std::pair<int, int> goal_ = {goal.x, goal.y}; 
     AstarPlanner::Point* current = astar_alg(start_, goal_, costmap, drivable); 
     RCLCPP_INFO(rclcpp::get_logger("AstarPlanner"), "AstarPlanner reconstructing path");
     std::vector<CellCoordinate> path = recontruct_path(current); 
-    RCLCPP_INFO(rclcpp::get_logger("AstarPlanner"), "AstarPlanner finished reconstructing path");
+    now = rclcpp::Clock().now();
+    sec = now.seconds();
+    nanosec = now.nanoseconds();
+    millisec = (nanosec / 1000000) % 1000;
+    RCLCPP_INFO(rclcpp::get_logger("AstarPlanner"),
+        "AstarPlanner finished reconstructing path at time: %ld.%03ld | Path length: %zu",
+        sec, millisec, path.size());
     return path;
 }

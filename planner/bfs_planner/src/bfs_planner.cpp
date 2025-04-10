@@ -13,7 +13,12 @@ std::vector<CellCoordinate> BfsPlanner::find_path(const Costmap &costmap,
         const CellCoordinate &start,
         const CellCoordinate &goal) 
 {
-    RCLCPP_INFO(rclcpp::get_logger("BfsPlanner"), "BfsPlanner finding path");  
+    rclcpp::Time now = rclcpp::Clock().now();
+    int64_t sec = now.seconds();
+    int64_t nanosec = now.nanoseconds();
+    int64_t millisec = (nanosec / 1000000) % 1000;
+    RCLCPP_INFO(rclcpp::get_logger("BfsPlanner"),
+            "BfsPlanner finding path at time: %ld.%03ld", sec, millisec);
 
     const int width = costmap.GetWidth();
     const int height = costmap.GetHeight();
@@ -72,6 +77,12 @@ std::vector<CellCoordinate> BfsPlanner::find_path(const Costmap &costmap,
     }
 
     std::reverse(path.begin(), path.end());
-
+    now = rclcpp::Clock().now();
+    sec = now.seconds();
+    nanosec = now.nanoseconds();
+    millisec = (nanosec / 1000000) % 1000;
+    RCLCPP_INFO(rclcpp::get_logger("BfsPlanner"),
+        "BfsPlanner finished reconstructing path at time: %ld.%03ld | Path length: %zu",
+        sec, millisec, path.size());
     return path;
 }
