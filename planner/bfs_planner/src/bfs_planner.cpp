@@ -31,9 +31,12 @@ std::vector<CellCoordinate> BfsPlanner::find_path(const Costmap &costmap,
     parent[start.x][start.y] = {-1, -1};
 
     bool found = false;
+    // RCLCPP_INFO(rclcpp::get_logger("BfsPlanner"), "HERE 1");  
 
     while (!queue.empty()) {
         CellCoordinate current = queue.front();
+        // RCLCPP_INFO(rclcpp::get_logger("BfsPlanner"), "HERE 2");  
+
         queue.pop();
 
         // Early exit if goal found
@@ -48,16 +51,21 @@ std::vector<CellCoordinate> BfsPlanner::find_path(const Costmap &costmap,
             const int ny = current.y + dir.y;
 
             // Check if neighbor is valid and unvisited
+            // RCLCPP_INFO(rclcpp::get_logger("BfsPlanner"), "HERE 3");  
+
             if (costmap.InBounds(nx, ny) && !visited[nx][ny]) {
                 const int cost = costmap.GetCost(nx, ny);
+                // RCLCPP_INFO(rclcpp::get_logger("BfsPlanner"), "HERE 4");  
+                
                 if (drivable(cost)) {
                     visited[nx][ny] = true;
                     parent[nx][ny] = current;
                     queue.push({nx, ny});
                 }
-            }
+            } 
         }
     }
+    // RCLCPP_INFO(rclcpp::get_logger("BfsPlanner"), "HERE 5");  
 
     if (!found) {
         return {};
@@ -72,6 +80,14 @@ std::vector<CellCoordinate> BfsPlanner::find_path(const Costmap &costmap,
     }
 
     std::reverse(path.begin(), path.end());
+    
+    if (!path.empty()) {
+        RCLCPP_INFO(rclcpp::get_logger("BfsPlanner"), 
+                    "Path found with %zu points. Start: (%d, %d), Goal: (%d, %d)", 
+                    path.size(), path.front().x, path.front().y, path.back().x, path.back().y);
+    } else {
+        RCLCPP_WARN(rclcpp::get_logger("BfsPlanner"), "Path is empty after reconstruction");
+    }
 
     return path;
 }
