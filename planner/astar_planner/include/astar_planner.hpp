@@ -47,12 +47,10 @@ struct ComparePointsCost {
 
 std::vector<std::vector<Point>> grid;
 std::priority_queue<Point*, std::vector<Point*>, ComparePointsCost> open;
-std::pair<double, double> goal;
-std::pair<double, double> start;
 
 std::vector<Point*> find_neighbors(Point* p, const infra_common::Costmap &costmap, const std::function<bool(int)> &drivable);
 double h_cost_calculation(Point* current_point, const std::pair<int, int>& goal);
-double g_cost_calculation(Point* current_point, Point* parent);
+double g_cost_calculation(Point* current_point, Point* parent, const infra_common::Costmap &costmap);
 void grid_init(const infra_common::Costmap &costmap);
 Point* astar_alg(const std::pair<int, int>& start, const std::pair<int, int>& goal, const infra_common::Costmap &costmap, const std::function<bool(int)> &drivable);
 std::vector<infra_common::CellCoordinate> recontruct_path(Point* current);

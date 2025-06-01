@@ -19,19 +19,29 @@ vector<AstarPlanner::Point*> AstarPlanner::find_neighbors(AstarPlanner::Point* p
         for (int col = -1; col <=1; col++) {
             int posx = p->pos.first+row;
             int posy = p->pos.second+col;
-            // skip if it is not in grid
-            if(posx >= static_cast<int>(grid.size()) 
-                || posy >= static_cast<int>(grid[0].size())
-                || posx < 0 || posy < 0) 
-                continue;
-            if(row == 0 && col == 0){
+            
+            if(row == 0 && col == 0){ // Skip the current point itself
                 continue;
             }
-            // check if cell is occupied
-            const int cost = costmap.GetCost(posx, posy);
+
+            // skip if it is not in grid
+            if(posx >= static_cast<int>(grid.size())
+                || posy >= static_cast<int>(grid[0].size())
+                || posx < 0 || posy < 0) {
+                
+                continue;
+            }
+            
+            // check if cell is drivable
+            int cost = costmap.GetCost(posx, posy);
+            if (cost < 0){ // fix for negative costs, if applicable
+                cost = 0; 
+            }
             bool drivable_ = drivable(cost);
 
-            if(drivable_ && !grid[posx][posy].visited){
+            // Only check drivability here. The 'visited' state and cost comparison
+            // will be handled in the main A* loop.
+            if(drivable_){
                 neighbors.push_back(&grid[posx][posy]);
             }
         }
@@ -46,10 +56,20 @@ double AstarPlanner::h_cost_calculation(AstarPlanner::Point* current_point, cons
     return sqrt(intermediate);
 }
 
-double AstarPlanner::g_cost_calculation(AstarPlanner::Point* current_point, AstarPlanner::Point* parent){
-    double intermediate = pow(current_point->pos.first - parent->pos.first, 2) + 
+double AstarPlanner::g_cost_calculation(AstarPlanner::Point* current_point, AstarPlanner::Point* parent, const Costmap &costmap){
+    // Euclidean distance between parent and current_point
+    double move_distance = pow(current_point->pos.first - parent->pos.first, 2) + 
             pow(current_point->pos.second - parent->pos.second, 2);
-    return sqrt(intermediate);
+    move_distance = sqrt(move_distance);
+    
+    // Get the cost of the cell *being moved to* (current_point's cell)
+    int cell_cost = costmap.GetCost(current_point->pos.first, current_point->pos.second);
+    if (cell_cost < 0) { // Handle potential negative costs
+        cell_cost = 0; 
+    }
+
+    // Total cost to reach current_point from parent
+    return move_distance + static_cast<double>(cell_cost);
 }
 
 void AstarPlanner::grid_init(const Costmap &costmap){
@@ -62,6 +82,11 @@ void AstarPlanner::grid_init(const Costmap &costmap){
         }
         grid.push_back(gridRow);
     }
+
+    cout << grid.size() << " " << grid[0].size();
+    cout << costmap.GetWidth() << " " << costmap.GetHeight();
+
+
 }
 
 // returns nullptr if found otherwise returns start_ptr
@@ -81,7 +106,7 @@ AstarPlanner::Point* AstarPlanner::astar_alg(const pair<int, int>& start, const 
 
         std::vector<AstarPlanner::Point*> neighbors = find_neighbors(current, costmap, drivable);
         for(AstarPlanner::Point* neighbor : neighbors){
-            double new_cost = g_cost_calculation(neighbor, current);
+            double new_cost = g_cost_calculation(neighbor, current, costmap);
             if(neighbor->g_cost > (current->g_cost + new_cost)){
                 neighbor->parent = current;
                 neighbor->g_cost = current->g_cost + new_cost;
@@ -113,6 +138,9 @@ std::vector<CellCoordinate> AstarPlanner::find_path(const Costmap &costmap,
         const CellCoordinate &start,
         const CellCoordinate &goal) 
 {
+    grid.clear();
+    open = std::priority_queue<Point*, std::vector<Point*>, ComparePointsCost>();
+
     rclcpp::Time now = rclcpp::Clock().now();
     int64_t sec = now.seconds();
     int64_t nanosec = now.nanoseconds();
